@@ -242,7 +242,7 @@ namespace Community.Security.AccessControl
 	[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("965FC360-16FF-11d0-91CB-00AA00BBB723")]
 	internal interface ISecurityInformation
 	{
-		void GetObjectInformation(out SI_OBJECT_INFO object_info);
+		void GetObjectInformation(ref SI_OBJECT_INFO object_info);
 
 		void GetSecurity([In] int RequestInformation, out IntPtr SecurityDescriptor, [In] bool fDefault);
 
@@ -579,6 +579,11 @@ namespace Community.Security.AccessControl
 		}
 
 		public bool IsContainer { get { return ((this.Flags & ObjInfoFlags.Container) == ObjInfoFlags.Container); } }
+
+		public override string ToString()
+		{
+			return string.Format("{0}: {1}{2}", this.ObjectName, this.Flags, IsContainer ? " (Cont)" : "");
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -605,7 +610,7 @@ namespace Community.Security.AccessControl
 		}
 	}
 
-	internal class SecurityInfoImpl : ISecurityInformation, ISecurityObjectTypeInfo, IEffectivePermission
+	internal class SecurityInfoImpl : ISecurityInformation //, ISecurityObjectTypeInfo, IEffectivePermission
 	{
 		internal SI_OBJECT_INFO ObjectInfo;
 		private IAccessControlEditorDialogProvider prov;
@@ -624,7 +629,7 @@ namespace Community.Security.AccessControl
 			set { pSD = new MarshaledMem(value); }
 		}
 
-		void IEffectivePermission.GetEffectivePermission(Guid pguidObjectType, IntPtr pUserSid, string pszServerName, IntPtr pSD, out ObjectTypeInfo[] ppObjectTypeList, out uint pcObjectTypeListLength, out uint[] ppGrantedAccessList, out uint pcGrantedAccessListLength)
+		/*void IEffectivePermission.GetEffectivePermission(Guid pguidObjectType, IntPtr pUserSid, string pszServerName, IntPtr pSD, out ObjectTypeInfo[] ppObjectTypeList, out uint pcObjectTypeListLength, out uint[] ppGrantedAccessList, out uint pcGrantedAccessListLength)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("GetEffectivePermission: {0}, {1}", pguidObjectType, pszServerName));
 			if (pguidObjectType == Guid.Empty)
@@ -640,7 +645,7 @@ namespace Community.Security.AccessControl
 				pcGrantedAccessListLength = (uint)ppGrantedAccessList.Length;
 				pcObjectTypeListLength = (uint)ppObjectTypeList.Length;
 			}
-		}
+		}*/
 
 		void ISecurityInformation.GetAccessRights(Guid guidObject, int dwFlags, out AccessRightInfo[] access, ref uint access_count, out uint DefaultAccess)
 		{
@@ -660,7 +665,7 @@ namespace Community.Security.AccessControl
 			InheritTypesCount = (uint)InheritTypes.Length;
 		}
 
-		void ISecurityInformation.GetObjectInformation(out SI_OBJECT_INFO object_info)
+		void ISecurityInformation.GetObjectInformation(ref SI_OBJECT_INFO object_info)
 		{
 			System.Diagnostics.Debug.WriteLine("GetObjectInformation");
 			object_info = this.ObjectInfo;
@@ -668,8 +673,9 @@ namespace Community.Security.AccessControl
 
 		void ISecurityInformation.GetSecurity(int RequestInformation, out IntPtr ppSecurityDescriptor, bool fDefault)
 		{
-			System.Diagnostics.Debug.WriteLine("GetSecurity");
-			ppSecurityDescriptor = fDefault ? this.prov.GetDefaultSecurity() : pSD.Ptr;
+			System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity: {0}{1}", RequestInformation, fDefault ? " (Def)" : ""));
+			ppSecurityDescriptor = Helper.GetPrivateObjectSecurity(fDefault ? this.prov.GetDefaultSecurity() : pSD.Ptr, RequestInformation);
+			//System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity={0}<-{1}", Helper.SecurityDescriptorPtrToSDLL(ppSecurityDescriptor, RequestInformation), Helper.SecurityDescriptorPtrToSDLL(pSD.Ptr, RequestInformation)));
 		}
 
 		void ISecurityInformation.MapGeneric(Guid guidObjectType, ref sbyte AceFlags, ref uint Mask)
@@ -691,11 +697,11 @@ namespace Community.Security.AccessControl
 				OnSetSecurity(new SecurityEventArg(sd, RequestInformation));
 		}
 
-		void ISecurityObjectTypeInfo.GetInheritSource(int si, IntPtr pACL, out InheritedFromInfo[] ppInheritArray)
+		/*void ISecurityObjectTypeInfo.GetInheritSource(int si, IntPtr pACL, out InheritedFromInfo[] ppInheritArray)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("GetInheritSource: {0}", si));
 			ppInheritArray = this.prov.GetInheritSource(this.ObjectInfo.ObjectName, this.ObjectInfo.IsContainer, (uint)si, pACL);
-		}
+		}*/
 
 		public void SetProvider(IAccessControlEditorDialogProvider provider)
 		{

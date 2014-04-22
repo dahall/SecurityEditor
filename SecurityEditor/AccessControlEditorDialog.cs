@@ -14,7 +14,7 @@ namespace Community.Windows.Forms
 		/// <summary>Psuedo type cast for a Task specific ResourceType.</summary>
 		public const System.Security.AccessControl.ResourceType TaskResourceType = (System.Security.AccessControl.ResourceType)99;
 
-		private static ObjInfoFlags defaultFlags = ObjInfoFlags.EditAll | ObjInfoFlags.Advanced | ObjInfoFlags.EditEffective | ObjInfoFlags.EditProperties;
+		private static ObjInfoFlags defaultFlags = ObjInfoFlags.EditAll | ObjInfoFlags.Advanced | ObjInfoFlags.NoAclProtect;
 
 		private SecurityInfoImpl iSecInfo;
 		private string objectName, serverName, title;
@@ -209,6 +209,18 @@ namespace Community.Windows.Forms
 		/// </value>
 		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public System.Security.AccessControl.RawSecurityDescriptor Result { get; private set; }
+
+		/// <summary>
+		/// Gets the resulting Security Descriptor in SDDL form.
+		/// </summary>
+		/// <value>
+		/// The resulting Security Descriptor in SDDL form.
+		/// </value>
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public string SDDL
+		{
+			get { return this.Result.GetSddlForm(System.Security.AccessControl.AccessControlSections.All); }
+		}
 
 		/// <summary>Set this flag if the computer defined by the ServerName property is known to be a domain controller. If this flag is set, the domain name is included in the scope list of the Add Users and Groups dialog box. Otherwise, the pszServerName computer is used to determine the scope list of the dialog box.</summary>
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

@@ -62,16 +62,38 @@ namespace Community.Security.AccessControl
 			return access;
 		}
 
+		public static IntPtr GetPrivateObjectSecurity(IntPtr pSD, int si)
+		{
+			IntPtr pResSD = IntPtr.Zero;
+			uint ret = 0;
+			GetPrivateObjectSecurity(pSD, si, IntPtr.Zero, 0, ref ret);
+			if (ret > 0)
+			{
+				pResSD = Marshal.AllocHGlobal((int)ret);
+				if (pResSD != IntPtr.Zero && !GetPrivateObjectSecurity(pSD, si, pResSD, ret, ref ret))
+				{
+					Marshal.FreeHGlobal(pResSD);
+					pResSD = IntPtr.Zero;
+					Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
+				}
+			}
+			return pResSD;
+		}
+
 		public static string SecurityDescriptorPtrToSDLL(IntPtr pSD, int si)
 		{
 			IntPtr ssd, ssdLen;
 			if (Helper.ConvertSecurityDescriptorToStringSecurityDescriptor(pSD, 1, si, out ssd, out ssdLen))
-				return Marshal.PtrToStringAuto(ssd);
+			{
+				string s = Marshal.PtrToStringAuto(ssd);
+				Marshal.FreeHGlobal(ssd);
+				return s;
+			}
 			return null;
 		}
 
 		[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-		public static extern bool ConvertSecurityDescriptorToStringSecurityDescriptor(IntPtr SecurityDescriptor, uint RequestedStringSDRevision,
+		private static extern bool ConvertSecurityDescriptorToStringSecurityDescriptor(IntPtr SecurityDescriptor, uint RequestedStringSDRevision,
 			int SecurityInformation, out IntPtr StringSecurityDescriptor, out IntPtr StringSecurityDescriptorLen);
 
 		[DllImport("aclui.dll")]
@@ -80,6 +102,10 @@ namespace Community.Security.AccessControl
 		[DllImport("advapi32.dll", CharSet = CharSet.Auto, PreserveSig = false)]
 		public static extern void GetInheritanceSource([MarshalAs(UnmanagedType.LPWStr)] string objectName, ResourceType objectType, SecurityInfos securityInfo,
 			bool container, IntPtr pObjectClassGuids, uint guidCount, IntPtr pAcl, IntPtr pfnArray, ref GenericRightsMapping pGenericMapping, IntPtr pInheritArray);
+
+		[DllImport("advapi32.dll", CharSet = CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool GetPrivateObjectSecurity(IntPtr ObjectDescriptor, int SecurityInformation, IntPtr ResultantDescriptor, uint DescriptorLength, ref uint ReturnLength);
 
 		[DllImport("advapi32.dll")]
 		public static extern void MapGenericMask(ref uint Mask, ref GenericRightsMapping map);
