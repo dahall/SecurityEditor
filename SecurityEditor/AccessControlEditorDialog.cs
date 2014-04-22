@@ -26,6 +26,7 @@ namespace Community.Windows.Forms
 		/// </summary>
 		public AccessControlEditorDialog()
 		{
+			PageType = SecurityPageType.BasicPermissions;
 		}
 
 		/// <summary>When set, this flag displays the Reset permissions on all child objects and enable propagation of inheritable permissions check box in the Permissions page of the Access Control Settings window. This function does not reset the permissions and enable propagation of inheritable permissions.</summary>
@@ -179,6 +180,15 @@ namespace Community.Windows.Forms
 			get { return this.HasFlag(ObjInfoFlags.OwnerRecurse); }
 			set { this.SetFlag(ObjInfoFlags.OwnerRecurse, value, true); }
 		}
+
+		/// <summary>
+		/// Gets or sets the type of the page to display.
+		/// </summary>
+		/// <value>
+		/// The type of the page.
+		/// </value>
+		[DefaultValue(typeof(SecurityPageType), "BasicPermissions"), Category("Behavior")]
+		public SecurityPageType PageType { get; set; }
 
 		/// <summary>If this flag is set, the editor displays the object's security information, but the controls for editing the information are disabled. This flag cannot be combined with the ViewOnly flag.</summary>
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -535,7 +545,7 @@ namespace Community.Windows.Forms
 			if (iSecInfo == null)
 				throw new InvalidOperationException("The Initialize method must be called before the dialog can be shown.");
 
-			var ret = iSecInfo.ShowDialog(hWndOwner);
+			var ret = iSecInfo.ShowDialog(hWndOwner, this.PageType);
 			if (ret != null)
 			{
 				MessageBox.Show(ret.GetSddlForm(System.Security.AccessControl.AccessControlSections.All));

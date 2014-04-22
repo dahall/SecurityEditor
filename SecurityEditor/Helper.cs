@@ -97,7 +97,11 @@ namespace Community.Security.AccessControl
 			int SecurityInformation, out IntPtr StringSecurityDescriptor, out IntPtr StringSecurityDescriptorLen);
 
 		[DllImport("aclui.dll")]
+		[return:MarshalAs(UnmanagedType.Bool)]
 		public static extern bool EditSecurity(IntPtr hwnd, ISecurityInformation psi);
+
+		[DllImport("aclui.dll", PreserveSig = true)]
+		public static extern int EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, SecurityPageType pageType);
 
 		[DllImport("advapi32.dll", CharSet = CharSet.Auto, PreserveSig = false)]
 		public static extern void GetInheritanceSource([MarshalAs(UnmanagedType.LPWStr)] string objectName, ResourceType objectType, SecurityInfos securityInfo,

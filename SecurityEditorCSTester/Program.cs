@@ -4,6 +4,7 @@ namespace SecurityEditorCSTester
 {
 	class Program
 	{
+		[System.STAThread]
 		static void Main(string[] args)
 		{
 			var dlg = new AccessControlEditorDialog();

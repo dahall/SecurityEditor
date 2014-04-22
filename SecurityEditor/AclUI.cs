@@ -194,6 +194,20 @@ namespace Community.Security.AccessControl
 		Share
 	}
 
+	/// <summary>
+	/// Values that indicate the types of property pages in an access control editor property sheet.
+	/// </summary>
+	public enum SecurityPageType
+	{
+		BasicPermissions = 0,
+		AdvancedPermissions,
+		Audit,
+		Owner,
+		EffectivePermissions,
+		TakeOwnership,
+		Share,
+	}
+
 	[Flags]
 	internal enum GET_SECURITY_REQUEST_INFORMATION
 	{
@@ -708,14 +722,25 @@ namespace Community.Security.AccessControl
 			prov = provider;
 		}
 
-		public RawSecurityDescriptor ShowDialog(IntPtr hWnd)
+		public RawSecurityDescriptor ShowDialog(IntPtr hWnd, SecurityPageType pageType = SecurityPageType.BasicPermissions)
 		{
 			SecurityEventArg sd = null;
 			SecurityEvent fn = delegate(SecurityEventArg e) { sd = e; };
 			try
 			{
 				this.OnSetSecurity += fn;
-				if (Helper.EditSecurity(hWnd, this) && sd != null)
+				if (System.Environment.OSVersion.Version.Major == 5 || pageType == SecurityPageType.BasicPermissions)
+				{
+					if (!Helper.EditSecurity(hWnd, this))
+						Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+				}
+				else
+				{
+					int res = Helper.EditSecurityAdvanced(hWnd, this, pageType);
+					if (res != 0)
+						Marshal.ThrowExceptionForHR(res);
+				}
+				if (sd != null)
 				{
 					string sddl = Helper.SecurityDescriptorPtrToSDLL(sd.SecurityDesciptor, sd.Parts);
 					if (!string.IsNullOrEmpty(sddl))
