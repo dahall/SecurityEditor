@@ -38,13 +38,17 @@ namespace Community.Security.AccessControl
 
 		public static IntPtr EmptyGuidPtr { get { return EmptyGuidMem.Ptr; } }
 
-		[DllImport("advapi32.dll", PreserveSig = false)]
-		public static extern void FreeInheritedFromArray(IntPtr pIA, ushort p, IntPtr intPtr);
-
-		public static Int16 GetAceCount(IntPtr pAcl)
+		public static uint GetAceCount(IntPtr pAcl)
 		{
-			ACL _dacl = (ACL)Marshal.PtrToStructure(pAcl, typeof(ACL));
-			return _dacl.AceCount;
+			return GetAclInfo(pAcl).AceCount;
+		}
+
+		public static ACCESS_ALLOWED_ACE GetAce(IntPtr pAcl, int aceIndex)
+		{
+			IntPtr acePtr;
+			if (GetAce(pAcl, aceIndex, out acePtr))
+				return (ACCESS_ALLOWED_ACE)Marshal.PtrToStructure(acePtr, typeof(ACCESS_ALLOWED_ACE));
+			throw new System.ComponentModel.Win32Exception();
 		}
 
 		public static uint GetEffectiveRights(IntPtr pSid, IntPtr pSD)
@@ -60,6 +64,35 @@ namespace Community.Security.AccessControl
 			GetEffectiveRightsFromAcl(pDacl, ref t, ref access);
 
 			return access;
+		}
+
+		public static InheritedFromInfo[] GetInheritanceSource(string objectName, ResourceType objectType,
+			SecurityInfos securityInfo, bool container, IntPtr pAcl, ref GenericRightsMapping pGenericMapping)
+		{
+			int objSize = Marshal.SizeOf(typeof(InheritedFromInfo));
+			var aceCount = Helper.GetAceCount(pAcl);
+			var ret = new InheritedFromInfo[aceCount];
+			IntPtr pInherit = Marshal.AllocHGlobal(objSize * (int)aceCount);
+			try
+			{
+				int hr = GetInheritanceSource(objectName, objectType, securityInfo, container, IntPtr.Zero, 0, pAcl, IntPtr.Zero, ref pGenericMapping, pInherit);
+				if (hr != 0)
+					throw new System.ComponentModel.Win32Exception(hr);
+				IntPtr pInheritTmp = pInherit;
+				for (int i = 0; i < aceCount; i++)
+				{
+					ret[i] = (InheritedFromInfo)Marshal.PtrToStructure(pInheritTmp, typeof(InheritedFromInfo));
+					System.Diagnostics.Debug.WriteLine(":  " + ret[i].ToString());
+					pInheritTmp = new IntPtr(pInheritTmp.ToInt32() + objSize);
+				}
+			}
+			catch { }
+			finally
+			{
+				FreeInheritedFromArray(pInherit, (ushort)aceCount, IntPtr.Zero);
+				Marshal.FreeHGlobal(pInherit);
+			}
+			return ret;
 		}
 
 		public static IntPtr GetPrivateObjectSecurity(IntPtr pSD, int si)
@@ -80,6 +113,27 @@ namespace Community.Security.AccessControl
 			return pResSD;
 		}
 
+		private static ACL_SIZE_INFORMATION GetAclInfo(IntPtr pAcl)
+		{
+			ACL_SIZE_INFORMATION si = new ACL_SIZE_INFORMATION();
+			if (!GetAclInformation(pAcl, ref si, (uint)Marshal.SizeOf(si), 2))
+				throw new System.ComponentModel.Win32Exception();
+			return si;
+		}
+
+		public static uint GetAclSize(IntPtr pAcl)
+		{
+			return GetAclInfo(pAcl).AclBytesInUse;
+		}
+
+		public static RawAcl RawAclFromPtr(IntPtr pAcl)
+		{
+			uint len = GetAclSize(pAcl);
+			byte[] dest = new byte[len];
+			Marshal.Copy(pAcl, dest, 0, (int)len);
+			return new RawAcl(dest, 0);
+		}
+
 		public static string SecurityDescriptorPtrToSDLL(IntPtr pSD, int si)
 		{
 			IntPtr ssd, ssdLen;
@@ -96,16 +150,23 @@ namespace Community.Security.AccessControl
 		private static extern bool ConvertSecurityDescriptorToStringSecurityDescriptor(IntPtr SecurityDescriptor, uint RequestedStringSDRevision,
 			int SecurityInformation, out IntPtr StringSecurityDescriptor, out IntPtr StringSecurityDescriptorLen);
 
+		[DllImport("advapi32.dll", SetLastError = true)]
+		private static extern bool GetAclInformation(IntPtr pAcl, ref ACL_SIZE_INFORMATION pAclInformation, uint nAclInformationLength, uint dwAclInformationClass);
+
 		[DllImport("aclui.dll")]
 		[return:MarshalAs(UnmanagedType.Bool)]
 		public static extern bool EditSecurity(IntPtr hwnd, ISecurityInformation psi);
 
-		[DllImport("aclui.dll", PreserveSig = true)]
-		public static extern int EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, SecurityPageType pageType);
+		[DllImport("aclui.dll", PreserveSig = false)]
+		public static extern void EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, SecurityPageType pageType);
 
-		[DllImport("advapi32.dll", CharSet = CharSet.Auto, PreserveSig = false)]
-		public static extern void GetInheritanceSource([MarshalAs(UnmanagedType.LPWStr)] string objectName, ResourceType objectType, SecurityInfos securityInfo,
-			bool container, IntPtr pObjectClassGuids, uint guidCount, IntPtr pAcl, IntPtr pfnArray, ref GenericRightsMapping pGenericMapping, IntPtr pInheritArray);
+		[DllImport("advapi32.dll", PreserveSig = false)]
+		private static extern void FreeInheritedFromArray(IntPtr pIA, ushort p, IntPtr intPtr);
+
+		[DllImport("advapi32.dll", CharSet = CharSet.Auto, PreserveSig = true)]
+		private static extern int GetInheritanceSource([MarshalAs(UnmanagedType.LPWStr)] string objectName, ResourceType objectType, SecurityInfos securityInfo,
+			[MarshalAs(UnmanagedType.Bool)] bool container, IntPtr pObjectClassGuids, uint guidCount, IntPtr pAcl, IntPtr pfnArray, ref GenericRightsMapping pGenericMapping,
+			IntPtr pInheritArray);
 
 		[DllImport("advapi32.dll", CharSet = CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
@@ -125,14 +186,42 @@ namespace Community.Security.AccessControl
 		private static extern bool GetSecurityDescriptorDacl(IntPtr pSecurityDescriptor, [MarshalAs(UnmanagedType.Bool)] out bool bDaclPresent,
 			ref IntPtr pDacl, [MarshalAs(UnmanagedType.Bool)] out bool bDaclDefaulted);
 
-		[StructLayoutAttribute(LayoutKind.Sequential)]
-		private struct ACL
+		[DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool GetAce(IntPtr aclPtr, int aceIndex, out IntPtr acePtr);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct ACE_HEADER
 		{
-			public Byte AclRevision;
-			public Byte Sbz1;
-			public Int16 AclSize;
-			public Int16 AceCount;
-			public Int16 Sbz2;
+			public byte AceType;
+			public byte AceFlags;
+			public short AceSize;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct ACCESS_ALLOWED_ACE
+		{
+			public ACE_HEADER Header;
+			public int Mask;
+			public int SidStart;
+
+			public override bool Equals(object obj)
+			{
+				if (obj is ACCESS_ALLOWED_ACE)
+				{
+					ACCESS_ALLOWED_ACE that = (ACCESS_ALLOWED_ACE)obj;
+					return (this.Header.AceType == that.Header.AceType && this.Header.AceFlags == that.Header.AceFlags && this.Mask == that.Mask);
+				}
+				return base.Equals(obj);
+			}
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		private struct ACL_SIZE_INFORMATION
+		{
+			public uint AceCount;
+			public uint AclBytesInUse;
+			public uint AclBytesFree;
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 0)] //Platform independent (32 & 64 bit) - use Pack = 0 for both platforms. IntPtr works as well.

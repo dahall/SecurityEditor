@@ -33,8 +33,6 @@ namespace Community.Security.AccessControl
 				// Special handling for Tasks
 				if (knownObject.GetType().FullName == "Microsoft.Win32.TaskScheduler.Task" || knownObject.GetType().FullName == "Microsoft.Win32.TaskScheduler.TaskFolder")
 				{
-					// TODO: AccessRights.AddTaskRights();
-
 					IsContainer = knownObject.GetType().Name == "TaskFolder";
 
 					var piTS = knownObject.GetType().GetProperty("TaskService", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
@@ -70,18 +68,37 @@ namespace Community.Security.AccessControl
 				else
 					throw new ArgumentException("Object must have a GetAccessControl member.");
 
-				// Get the object name using a "Name" property if one exists
-				var pi = knownObject.GetType().GetProperty("FullName", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-				if (pi == null)
-					pi = knownObject.GetType().GetProperty("Name", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-				if (pi != null)
-					DisplayName = knownObject.ToString();
+				// Get the object names
+				switch (knownObject.GetType().Name)
+				{
+					case "RegistryKey":
+						ObjectName = GetProperty(knownObject, "Name");
+						DisplayName = System.IO.Path.GetFileNameWithoutExtension(ObjectName);
+						break;
+					case "Task":
+						DisplayName = GetProperty(knownObject, "Name");
+						ObjectName = GetProperty(knownObject, "Path");
+						break;
+					default:
+						ObjectName = GetProperty(knownObject, "FullName");
+						DisplayName = GetProperty(knownObject, "Name");
+						if (ObjectName == null) ObjectName = DisplayName;
+						break;
+				}
 
 				// Set the base object
 				BaseObject = knownObject;
 			}
 			this.IsContainer = SecuredObject.IsContainerObject(ObjectSecurity);
 			this.MandatoryLabel = new SystemMandatoryLabel(this.ObjectSecurity);
+		}
+
+		internal static string GetProperty(object knownObject, string propName)
+		{
+			var pi = knownObject.GetType().GetProperty(propName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			if (pi != null)
+				return Convert.ToString(pi.GetValue(knownObject, null));
+			return null;
 		}
 
 		public enum SystemMandatoryLabelLevel
@@ -105,6 +122,8 @@ namespace Community.Security.AccessControl
 
 		public string DisplayName { get; set; }
 
+		public string ObjectName { get; set; }
+
 		public bool IsContainer { get; set; }
 
 		public SystemMandatoryLabel MandatoryLabel { get; private set; }
@@ -125,6 +144,144 @@ namespace Community.Security.AccessControl
 						return Enum.ToObject(accRightType, pi.GetValue(rule, null));
 			}
 			throw new ArgumentException();
+		}
+
+		public static object GetKnownObject(ResourceType resType, string objName, string serverName)
+		{
+			object obj = null;
+			switch (resType)
+			{
+				case System.Security.AccessControl.ResourceType.FileObject:
+					if (!string.IsNullOrEmpty(serverName))
+						objName = System.IO.Path.Combine(serverName, objName);
+					if (System.IO.File.Exists(objName))
+						obj = new System.IO.FileInfo(objName);
+					else if (System.IO.Directory.Exists(objName))
+						obj = new System.IO.DirectoryInfo(objName);
+					break;
+				case System.Security.AccessControl.ResourceType.RegistryKey:
+					obj = GetKeyFromKeyName(objName, serverName);
+					break;
+				case Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType:
+					obj = GetTaskObj(objName, serverName);
+					break;
+				default:
+					break;
+			}
+			if (obj == null)
+				throw new ArgumentException("Unable to create an object from supplied arguments.");
+			return obj;
+		}
+
+		private static object GetTaskObj(string objName, string serverName)
+		{
+			try
+			{
+				System.Reflection.Assembly asm = System.Reflection.Assembly.LoadFrom("Microsoft.Win32.TaskScheduler.dll");
+				if (asm != null)
+				{
+					Type tsType = asm.GetType("Microsoft.Win32.TaskScheduler.TaskService", false, false);
+					if (tsType != null)
+					{
+						object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
+						if (ts != null)
+						{
+							System.Reflection.MethodInfo mi = tsType.GetMethod("GetFolder", new Type[] { typeof(string) });
+							if (mi != null)
+							{
+								try
+								{
+									object r = mi.Invoke(ts, new object[] { objName });
+									if (r != null)
+										return r;
+								}
+								catch { }
+							}
+
+							mi = tsType.GetMethod("GetTask", new Type[] { typeof(string) });
+							if (mi != null)
+							{
+								try
+								{
+									object r = mi.Invoke(ts, new object[] { objName });
+									if (r != null)
+										return r;
+								}
+								catch { }
+							}
+
+							mi = tsType.GetMethod("FindTask", new Type[] { typeof(string), typeof(bool) });
+							if (mi != null)
+							{
+								try
+								{
+									object r = mi.Invoke(ts, new object[] { objName, true });
+									if (r != null)
+										return r;
+								}
+								catch { }
+							}
+						}
+					}
+				}
+			}
+			catch { }
+			return null;
+		}
+
+		private static Microsoft.Win32.RegistryKey GetKeyFromKeyName(string keyName, string serverName)
+		{
+			if (keyName == null)
+				return null;
+
+			string str;
+			int index = keyName.IndexOf('\\');
+			if (index != -1)
+				str = keyName.Substring(0, index).ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+			else
+				str = keyName.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+
+			Microsoft.Win32.RegistryHive hive;
+			switch (str)
+			{
+				case "HKEY_CURRENT_USER":
+					hive = Microsoft.Win32.RegistryHive.CurrentUser;
+					break;
+
+				case "HKEY_LOCAL_MACHINE":
+					hive = Microsoft.Win32.RegistryHive.LocalMachine;
+					break;
+
+				case "HKEY_CLASSES_ROOT":
+					hive = Microsoft.Win32.RegistryHive.ClassesRoot;
+					break;
+
+				case "HKEY_USERS":
+					hive = Microsoft.Win32.RegistryHive.Users;
+					break;
+
+				case "HKEY_PERFORMANCE_DATA":
+					hive = Microsoft.Win32.RegistryHive.PerformanceData;
+					break;
+
+				case "HKEY_CURRENT_CONFIG":
+					hive = Microsoft.Win32.RegistryHive.CurrentConfig;
+					break;
+
+				default:
+					return null;
+			}
+
+			if (serverName == null)
+				serverName = string.Empty;
+
+			Microsoft.Win32.RegistryKey retVal = Microsoft.Win32.RegistryKey.OpenRemoteBaseKey(hive, serverName);
+
+			if ((index == -1) || (index == keyName.Length))
+				return retVal;
+
+			string subKeyName = keyName.Substring(index + 1, (keyName.Length - index) - 1);
+			return retVal.OpenSubKey(subKeyName);
 		}
 
 		public static ResourceType GetResourceType(CommonObjectSecurity sec)

@@ -20,9 +20,10 @@ namespace Community.Security.AccessControl
 		/// <summary>
 		/// Gets an array of <see cref="AccessRightInfo" /> structures which define how to display differnt access rights supplied to the editor along with the index of the access right that should be applied to new ACEs.
 		/// </summary>
+		/// <param name="flags">A set of bit flags that indicate the property page being initialized. This value is zero if the basic security page is being initialized.</param>
 		/// <param name="rights">The access right information for each right.</param>
 		/// <param name="defaultIndex">The default index in the <paramref name="rights" /> array for new ACEs.</param>
-		void GetAccessListInfo(out AccessRightInfo[] rights, out uint defaultIndex);
+		void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex);
 
 		/// <summary>
 		/// Gets a default Security Descriptor for resetting the security of the object.
@@ -53,20 +54,24 @@ namespace Community.Security.AccessControl
 		/// <summary>
 		/// Gets the generic mapping for standard rights.
 		/// </summary>
-		/// <returns>A <see cref="GenericRightsMapping"/> structure fror this object type.</returns>
-		GenericRightsMapping GetGenericMapping();
+		/// <param name="AceFlags">The ace flags.</param>
+		/// <returns>
+		/// A <see cref="GenericRightsMapping" /> structure fror this object type.
+		/// </returns>
+		GenericRightsMapping GetGenericMapping(sbyte AceFlags);
 
 		/// <summary>
 		/// Determines the source of inherited access control entries (ACEs) in discretionary access control lists (DACLs) and system access control lists (SACLs).
 		/// </summary>
 		/// <param name="objName">Name of the object.</param>
+		/// <param name="serverName">Name of the server.</param>
 		/// <param name="isContainer">If set to <c>true</c> object is a container.</param>
 		/// <param name="si">The object-related security information being queried. See SECURITY_INFORMATION type in Windows documentation.</param>
 		/// <param name="pAcl">A pointer to the Acl.</param>
 		/// <returns>
 		/// An array of <see cref="InheritedFromInfo" /> structures. The length of this array is the same as the number of ACEs in the ACL referenced by pACL. Each <see cref="InheritedFromInfo" /> entry provides inheritance information for the corresponding ACE entry in pACL.
 		/// </returns>
-		InheritedFromInfo[] GetInheritSource(string objName, bool isContainer, uint si, IntPtr pAcl);
+		InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl);
 
 		/// <summary>
 		/// Gets inheritance information for supported object type.
@@ -80,7 +85,7 @@ namespace Community.Security.AccessControl
 		/// <param name="hwnd">The HWND.</param>
 		/// <param name="uMsg">The message.</param>
 		/// <param name="uPage">The page type.</param>
-		void PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, PropertySheetPageType uPage);
+		void PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, SecurityPageType uPage);
 	}
 
 	/// <summary>
@@ -104,7 +109,7 @@ namespace Community.Security.AccessControl
 		/// </summary>
 		/// <param name="rights">The access right information for each right.</param>
 		/// <param name="defaultIndex">The default index in the <paramref name="rights" /> array for new ACEs.</param>
-		virtual public void GetAccessListInfo(out AccessRightInfo[] rights, out uint defaultIndex)
+		virtual public void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 		{
 			rights = new AccessRightInfo[] {
 				new AccessRightInfo(0, ResStr("Object"), (AccessFlags)0)
@@ -161,7 +166,7 @@ namespace Community.Security.AccessControl
 		/// <returns>
 		/// A <see cref="GenericRightsMapping" /> structure fror this object type.
 		/// </returns>
-		virtual public GenericRightsMapping GetGenericMapping()
+		virtual public GenericRightsMapping GetGenericMapping(sbyte AceFlags)
 		{
 			return new GenericRightsMapping(0x80000000, 0x40000000, 0x20000000, 0x10000000);
 		}
@@ -170,36 +175,17 @@ namespace Community.Security.AccessControl
 		/// Determines the source of inherited access control entries (ACEs) in discretionary access control lists (DACLs) and system access control lists (SACLs).
 		/// </summary>
 		/// <param name="objName">Name of the object.</param>
+		/// <param name="serverName">Name of the server.</param>
 		/// <param name="isContainer">If set to <c>true</c> object is a container.</param>
 		/// <param name="si">The object-related security information being queried. See SECURITY_INFORMATION type in Windows documentation.</param>
 		/// <param name="pAcl">A pointer to the Acl.</param>
 		/// <returns>
 		/// An array of <see cref="InheritedFromInfo" /> structures. The length of this array is the same as the number of ACEs in the ACL referenced by pACL. Each <see cref="InheritedFromInfo" /> entry provides inheritance information for the corresponding ACE entry in pACL.
 		/// </returns>
-		virtual public InheritedFromInfo[] GetInheritSource(string objName, bool isContainer, uint si, IntPtr pAcl)
+		virtual public InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
-			GenericRightsMapping gMap = this.GetGenericMapping();
-			var aceCount = Helper.GetAceCount(pAcl);
-			var strSize = Marshal.SizeOf(typeof(InheritedFromInfo));
-			IntPtr pIA = Marshal.AllocHGlobal(strSize * aceCount);
-			var ppInheritArray = new InheritedFromInfo[aceCount];
-			try
-			{
-				Helper.GetInheritanceSource(objName, this.ResourceType, (SecurityInfos)si, isContainer, IntPtr.Zero, 0, pAcl, IntPtr.Zero, ref gMap, pIA);
-				IntPtr ppIA = pIA;
-				for (int i = 0; i < aceCount; i++)
-				{
-					ppInheritArray[i] = (InheritedFromInfo)Marshal.PtrToStructure(ppIA, typeof(InheritedFromInfo));
-					ppIA = new IntPtr(ppIA.ToInt32() + strSize);
-				}
-			}
-			catch { }
-			finally
-			{
-				Helper.FreeInheritedFromArray(pIA, (ushort)aceCount, IntPtr.Zero);
-				Marshal.FreeHGlobal(pIA);
-			}
-			return ppInheritArray;
+			GenericRightsMapping gMap = this.GetGenericMapping(0);
+			return Helper.GetInheritanceSource(objName, this.ResourceType, (SecurityInfos)si, isContainer, pAcl, ref gMap);
 		}
 
 		/// <summary>
@@ -227,7 +213,7 @@ namespace Community.Security.AccessControl
 		/// <param name="hwnd">The HWND.</param>
 		/// <param name="uMsg">The message.</param>
 		/// <param name="uPage">The page type.</param>
-		public virtual void PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, PropertySheetPageType uPage)
+		public virtual void PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, SecurityPageType uPage)
 		{
 		}
 
@@ -252,13 +238,13 @@ namespace Community.Security.AccessControl
 			get { return ResourceType.FileObject; }
 		}
 
-		public override void GetAccessListInfo(out AccessRightInfo[] rights, out uint defaultIndex)
+		public override void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 		{
 			rights = new AccessRightInfo[] {
 				new AccessRightInfo((uint)FileSystemRights.FullControl, ResStr("FileRightFullControl"), AccessFlags.General | AccessFlags.Specific | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
 				new AccessRightInfo((uint)FileSystemRights.Modify, ResStr("FileRightModify"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
-				new AccessRightInfo((uint)FileSystemRights.ExecuteFile, ResStr("FileRightExecuteFile"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
-				new AccessRightInfo((uint)FileSystemRights.ReadAndExecute, ResStr("FileRightReadAndExecute"), AccessFlags.Container | AccessFlags.ContainerInheritAce),
+				new AccessRightInfo((uint)FileSystemRights.ReadAndExecute, ResStr("FileRightReadAndExecute"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+				new AccessRightInfo((uint)FileSystemRights.ReadAndExecute, ResStr("FileRightListFolderContents"), AccessFlags.Container | AccessFlags.ContainerInheritAce),
 				new AccessRightInfo((uint)FileSystemRights.Read, ResStr("FileRightRead"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
 				new AccessRightInfo((uint)FileSystemRights.Write, ResStr("FileRightWrite"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
 				new AccessRightInfo((uint)FileSystemRights.ExecuteFile, ResStr("FileRightExecuteFile"), AccessFlags.Specific),
@@ -274,11 +260,11 @@ namespace Community.Security.AccessControl
 				new AccessRightInfo((uint)FileSystemRights.ReadPermissions, ResStr("FileRightReadPermissions"), AccessFlags.Specific),
 				new AccessRightInfo((uint)FileSystemRights.ChangePermissions, ResStr("FileRightChangePermissions"), AccessFlags.Specific),
 				new AccessRightInfo((uint)FileSystemRights.TakeOwnership, ResStr("StdRightTakeOwnership"), AccessFlags.Specific),
-				new AccessRightInfo((uint)FileSystemRights.Synchronize, ResStr("StdRightSynchronize"), AccessFlags.Specific),
-				new AccessRightInfo((uint)FileSystemRights.ExecuteFile, ResStr("FileExecute"), (AccessFlags)0),
-				new AccessRightInfo((uint)(FileSystemRights.Write | FileSystemRights.ExecuteFile), ResStr("FileRightWriteAndExecute"), (AccessFlags)0),
-				new AccessRightInfo((uint)(FileSystemRights.ReadAndExecute | FileSystemRights.Write), ResStr("FileRightReadWriteAndExecute"), (AccessFlags)0),
-				new AccessRightInfo(0, ResStr("File"), (AccessFlags)0)
+				new AccessRightInfo((uint)FileSystemRights.Modify, ResStr("FileRightModify"), AccessFlags.Ignore),
+				new AccessRightInfo((uint)FileSystemRights.ReadAndExecute, ResStr("FileRightReadAndExecute"), AccessFlags.Ignore),
+				new AccessRightInfo((uint)(FileSystemRights.Write | FileSystemRights.ExecuteFile), ResStr("FileRightWriteAndExecute"), AccessFlags.Ignore),
+				new AccessRightInfo((uint)(FileSystemRights.ReadAndExecute | FileSystemRights.Write), ResStr("FileRightReadWriteAndExecute"), AccessFlags.Ignore),
+				new AccessRightInfo(0, ResStr("File"), AccessFlags.Ignore)
 			};
 			defaultIndex = 3;
 		}
@@ -289,9 +275,12 @@ namespace Community.Security.AccessControl
 			// TODO: This should return the parent's security or a default access if root.
 		}
 
-		public override GenericRightsMapping GetGenericMapping()
+		public override GenericRightsMapping GetGenericMapping(sbyte AceFlags)
 		{
-			return new GenericRightsMapping(0x00120089, 0x00120116, 0x001200A0, 0x001F01FF);
+			return new GenericRightsMapping((uint)(FileSystemRights.Read | FileSystemRights.Synchronize),
+				(uint)(FileSystemRights.Write | FileSystemRights.Synchronize),
+				0x1200A0,
+				(uint)FileSystemRights.FullControl);
 		}
 
 		public override InheritTypeInfo[] GetInheritTypes()
@@ -322,6 +311,62 @@ namespace Community.Security.AccessControl
 		{
 			get { return ResourceType.RegistryKey; }
 		}
+
+		public override void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
+		{
+			rights = new AccessRightInfo[] {
+				new AccessRightInfo((uint)RegistryRights.FullControl, ResStr("FileRightFullControl"), AccessFlags.General | AccessFlags.Specific | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+				new AccessRightInfo((uint)RegistryRights.ReadKey, ResStr("FileRightRead"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+				new AccessRightInfo((uint)RegistryRights.QueryValues, ResStr("RegistryRightQueryValues"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.SetValue, ResStr("RegistryRightSetValue"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.CreateSubKey, ResStr("RegistryRightCreateSubKey"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.EnumerateSubKeys, ResStr("RegistryRightEnumerateSubKeys"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.Notify, ResStr("RegistryRightNotify"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.CreateLink, ResStr("RegistryRightCreateLink"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.Delete, ResStr("StdRightDelete"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.ChangePermissions, ResStr("RegistryRightChangePermissions"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.TakeOwnership, ResStr("RegistryRightTakeOwnership"), AccessFlags.Specific),
+				new AccessRightInfo((uint)RegistryRights.ReadPermissions, ResStr("RegistryRightReadControl"), AccessFlags.Specific),
+				new AccessRightInfo(0, ResStr("File"), (AccessFlags)0)
+			};
+			defaultIndex = 11;
+		}
+
+		public override IntPtr GetDefaultSecurity()
+		{
+			return base.GetDefaultSecurity();
+			// TODO: This should return the parent's security or a default access if root.
+		}
+
+		public override GenericRightsMapping GetGenericMapping(sbyte AceFlags)
+		{
+			return new GenericRightsMapping((uint)RegistryRights.ReadKey, (uint)RegistryRights.WriteKey, (uint)RegistryRights.ExecuteKey, (uint)RegistryRights.FullControl);
+		}
+
+		public override InheritTypeInfo[] GetInheritTypes()
+		{
+			return new InheritTypeInfo[] {
+				new InheritTypeInfo((InheritFlags)0, ResStr("RegistryInheritance")),
+				new InheritTypeInfo(InheritFlags.Container | InheritFlags.Object, ResStr("RegistryInheritanceCI")),
+				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Container, ResStr("RegistryInheritanceIOCI")),
+			};
+		}
+
+		public override InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
+		{
+			var ret = base.GetInheritSource(objName, serverName, isContainer, si, pAcl);
+			for (int i = 0; i < ret.Length; i++)
+			{
+				if (ret[i].GenerationGap == -1)
+				{
+					int idx = objName.StartsWith(@"\\") ? 1 : 0;
+					string[] parts = objName.TrimStart('\\').Split('\\');
+					if (parts.Length > idx)
+						ret[i].AncestorName = parts[idx].Replace("HKEY_", "");
+				}
+			}
+			return ret;
+		}
 	}
 
 	internal class TaskProvider : GenericProvider
@@ -329,6 +374,68 @@ namespace Community.Security.AccessControl
 		public override ResourceType ResourceType
 		{
 			get { return Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType; }
+		}
+
+		public override void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
+		{
+			rights = new AccessRightInfo[] {
+				new AccessRightInfo(0x1F01FF, ResStr("FileRightFullControl"), AccessFlags.General | AccessFlags.Specific | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+				new AccessRightInfo(0x1200A9, ResStr("FileRightListFolderContents"), AccessFlags.Container | AccessFlags.ContainerInheritAce),
+				new AccessRightInfo(0x120089, ResStr("FileRightRead"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+				new AccessRightInfo(0x120116, ResStr("FileRightWrite"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+				new AccessRightInfo(0x1200A0, ResStr("TaskRightExecute"), AccessFlags.General | AccessFlags.ContainerInheritAce | AccessFlags.ObjectInheritAce),
+
+				new AccessRightInfo(0x000001, ResStr("FileRightReadData"), AccessFlags.Specific),
+				new AccessRightInfo(0x000002, ResStr("FileRightWriteData"), AccessFlags.Specific),
+				new AccessRightInfo(0x000004, ResStr("FileRightAppendData"), AccessFlags.Specific),
+				new AccessRightInfo(0x000008, ResStr("FileRightReadExtendedAttributes"), AccessFlags.Specific),
+				new AccessRightInfo(0x000010, ResStr("FileRightWriteExtendedAttributes"), AccessFlags.Specific),
+				new AccessRightInfo(0x000020, ResStr("FileRightExecuteFile"), AccessFlags.Specific),
+				new AccessRightInfo(0x000040, ResStr("FileRightDeleteSubdirectoriesAndFiles"), AccessFlags.Specific),
+				new AccessRightInfo(0x000080, ResStr("FileRightReadAttributes"), AccessFlags.Specific),
+				new AccessRightInfo(0x000100, ResStr("FileRightWriteAttributes"), AccessFlags.Specific),
+				new AccessRightInfo(0x010000, ResStr("StdRightDelete"), AccessFlags.Specific),
+				new AccessRightInfo((uint)FileSystemRights.ReadPermissions, ResStr("FileRightReadPermissions"), AccessFlags.Specific),
+				new AccessRightInfo((uint)FileSystemRights.ChangePermissions, ResStr("FileRightChangePermissions"), AccessFlags.Specific),
+				new AccessRightInfo((uint)FileSystemRights.TakeOwnership, ResStr("StdRightTakeOwnership"), AccessFlags.Specific),
+				new AccessRightInfo(0x100000, ResStr("Synchronize"), AccessFlags.Specific),
+
+				new AccessRightInfo(0x1F019F, ResStr("FileRightReadWriteAndExecute"), AccessFlags.Ignore),
+				new AccessRightInfo(0, ResStr("File"), AccessFlags.Ignore)
+			};
+			defaultIndex = 3;
+		}
+
+		public override IntPtr GetDefaultSecurity()
+		{
+			return base.GetDefaultSecurity();
+			// TODO: This should return the parent's security or a default access if root.
+		}
+
+		public override GenericRightsMapping GetGenericMapping(sbyte AceFlags)
+		{
+			return new GenericRightsMapping(0x120089, 0x120116, 0x1200A0, 0x1F01FF);
+		}
+
+		public override InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
+		{
+			object obj = SecuredObject.GetKnownObject(Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType, objName, serverName);
+			RawAcl acl = Helper.RawAclFromPtr(pAcl);
+
+			// Get list of all parents
+			var parents = new System.Collections.Generic.List<object>();
+			object folder = SecuredObject.GetProperty(obj, isContainer ? "Parent" : "Folder");
+			while (folder != null)
+			{
+				parents.Add(folder);
+				folder = SecuredObject.GetProperty(folder, "Parent");
+			}
+
+			// For each ACE, walk up list of lists of parents to determine if there's a matching one.
+			for (int i = 0; i < acl.Count; i++)
+			{
+			}
+			return new InheritedFromInfo[Helper.GetAceCount(pAcl)];
 		}
 	}
 }

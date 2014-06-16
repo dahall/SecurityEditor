@@ -187,6 +187,15 @@ namespace Community.Security.AccessControl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to List folder contents.
+        /// </summary>
+        internal static string FileRightListFolderContents {
+            get {
+                return ResourceManager.GetString("FileRightListFolderContents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Modify.
         /// </summary>
         internal static string FileRightModify {
@@ -322,6 +331,114 @@ namespace Community.Security.AccessControl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This key only.
+        /// </summary>
+        internal static string RegistryInheritance {
+            get {
+                return ResourceManager.GetString("RegistryInheritance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This key and subkeys.
+        /// </summary>
+        internal static string RegistryInheritanceCI {
+            get {
+                return ResourceManager.GetString("RegistryInheritanceCI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subkeys only.
+        /// </summary>
+        internal static string RegistryInheritanceIOCI {
+            get {
+                return ResourceManager.GetString("RegistryInheritanceIOCI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write DAC.
+        /// </summary>
+        internal static string RegistryRightChangePermissions {
+            get {
+                return ResourceManager.GetString("RegistryRightChangePermissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Link.
+        /// </summary>
+        internal static string RegistryRightCreateLink {
+            get {
+                return ResourceManager.GetString("RegistryRightCreateLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Subkey.
+        /// </summary>
+        internal static string RegistryRightCreateSubKey {
+            get {
+                return ResourceManager.GetString("RegistryRightCreateSubKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enumerate Subkeys.
+        /// </summary>
+        internal static string RegistryRightEnumerateSubKeys {
+            get {
+                return ResourceManager.GetString("RegistryRightEnumerateSubKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notify.
+        /// </summary>
+        internal static string RegistryRightNotify {
+            get {
+                return ResourceManager.GetString("RegistryRightNotify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query Value.
+        /// </summary>
+        internal static string RegistryRightQueryValues {
+            get {
+                return ResourceManager.GetString("RegistryRightQueryValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read Control.
+        /// </summary>
+        internal static string RegistryRightReadControl {
+            get {
+                return ResourceManager.GetString("RegistryRightReadControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Value.
+        /// </summary>
+        internal static string RegistryRightSetValue {
+            get {
+                return ResourceManager.GetString("RegistryRightSetValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write Owner.
+        /// </summary>
+        internal static string RegistryRightTakeOwnership {
+            get {
+                return ResourceManager.GetString("RegistryRightTakeOwnership", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This object.
         /// </summary>
         internal static string StdInheritance {
@@ -408,6 +525,15 @@ namespace Community.Security.AccessControl.Properties {
         internal static string StdRightTakeOwnership {
             get {
                 return ResourceManager.GetString("StdRightTakeOwnership", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execute.
+        /// </summary>
+        internal static string TaskRightExecute {
+            get {
+                return ResourceManager.GetString("TaskRightExecute", resourceCulture);
             }
         }
     }

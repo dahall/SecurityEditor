@@ -117,77 +117,163 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="accessControlEditorDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>218, 17</value>
-  </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="toolStripButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIDSURBVDhPpZLrS5NhGMb3j4SWh0oRQVExD4gonkDpg4hG
-        YKxG6WBogkMZKgPNCEVJFBGdGETEvgwyO9DJE5syZw3PIlPEE9pgBCLZ5XvdMB8Ew8gXbl54nuf63dd9
-        0OGSnwCahxbPRNPAPMw9Xpg6ZmF46kZZ0xSKzJPIrhpDWsVnpBhGkKx3nAX8Pv7z1zg8OoY/cITdn4fw
-        bf/C0kYAN3Ma/w3gWfZL5kzTKBxjWyK2DftwI9tyMYCZKXbNHaD91bLYJrDXsYbrWfUKwJrPE9M2M1Oc
-        VzOOpHI7Jr376Hi9ogHqFIANO0/MmmmbmSmm9a8ze+I4MrNWAdjtoJgWcx+PSzg166yZZ8xM8XvXDix9
-        c4jIqFYAjoriBV9AhEPv1mH/sonogha0afbZMMZz+yreTGyhpusHwtNNCsA5U1zS4BLxzJIfg299qO32
-        Ir7UJtZfftyATqeT+8o2D8JSjQrAJblrncYL7ZJ2+bfaFnC/1S1NjL3diRat7qrO7wLRP3HjWsojBeCo
-        mDEo5mNjuweFGvjWg2EBhCbpkW78htSHHwRyNdmgAFzPEee2iFkzayy2OLXzT4gr6UdUnlXrullsxxQ+
-        kx0g8BTA3aZlButjSTyjODq/WcQcW/B/Je4OQhLvKQDnzN1mp0nnkvAhR8VuMzNrpm1mpjgkoVwB/v8D
-        TgDQASA1MVpwzwAAAABJRU5ErkJggg==
-</value>
+  <data name="AccessControlTypeAllow" xml:space="preserve">
+    <value />
   </data>
-  <data name="toolStripButton2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIDSURBVDhPpZLrS5NhGMb3j4SWh0oRQVExD4gonkDpg4hG
-        YKxG6WBogkMZKgPNCEVJFBGdGETEvgwyO9DJE5syZw3PIlPEE9pgBCLZ5XvdMB8Ew8gXbl54nuf63dd9
-        0OGSnwCahxbPRNPAPMw9Xpg6ZmF46kZZ0xSKzJPIrhpDWsVnpBhGkKx3nAX8Pv7z1zg8OoY/cITdn4fw
-        bf/C0kYAN3Ma/w3gWfZL5kzTKBxjWyK2DftwI9tyMYCZKXbNHaD91bLYJrDXsYbrWfUKwJrPE9M2M1Oc
-        VzOOpHI7Jr376Hi9ogHqFIANO0/MmmmbmSmm9a8ze+I4MrNWAdjtoJgWcx+PSzg166yZZ8xM8XvXDix9
-        c4jIqFYAjoriBV9AhEPv1mH/sonogha0afbZMMZz+yreTGyhpusHwtNNCsA5U1zS4BLxzJIfg299qO32
-        Ir7UJtZfftyATqeT+8o2D8JSjQrAJblrncYL7ZJ2+bfaFnC/1S1NjL3diRat7qrO7wLRP3HjWsojBeCo
-        mDEo5mNjuweFGvjWg2EBhCbpkW78htSHHwRyNdmgAFzPEee2iFkzayy2OLXzT4gr6UdUnlXrullsxxQ+
-        kx0g8BTA3aZlButjSTyjODq/WcQcW/B/Je4OQhLvKQDnzN1mp0nnkvAhR8VuMzNrpm1mpjgkoVwB/v8D
-        TgDQASA1MVpwzwAAAABJRU5ErkJggg==
-</value>
+  <data name="AccessControlTypeDeny" xml:space="preserve">
+    <value />
   </data>
-  <data name="toolStripButton3.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIDSURBVDhPpZLrS5NhGMb3j4SWh0oRQVExD4gonkDpg4hG
-        YKxG6WBogkMZKgPNCEVJFBGdGETEvgwyO9DJE5syZw3PIlPEE9pgBCLZ5XvdMB8Ew8gXbl54nuf63dd9
-        0OGSnwCahxbPRNPAPMw9Xpg6ZmF46kZZ0xSKzJPIrhpDWsVnpBhGkKx3nAX8Pv7z1zg8OoY/cITdn4fw
-        bf/C0kYAN3Ma/w3gWfZL5kzTKBxjWyK2DftwI9tyMYCZKXbNHaD91bLYJrDXsYbrWfUKwJrPE9M2M1Oc
-        VzOOpHI7Jr376Hi9ogHqFIANO0/MmmmbmSmm9a8ze+I4MrNWAdjtoJgWcx+PSzg166yZZ8xM8XvXDix9
-        c4jIqFYAjoriBV9AhEPv1mH/sonogha0afbZMMZz+yreTGyhpusHwtNNCsA5U1zS4BLxzJIfg299qO32
-        Ir7UJtZfftyATqeT+8o2D8JSjQrAJblrncYL7ZJ2+bfaFnC/1S1NjL3diRat7qrO7wLRP3HjWsojBeCo
-        mDEo5mNjuweFGvjWg2EBhCbpkW78htSHHwRyNdmgAFzPEee2iFkzayy2OLXzT4gr6UdUnlXrullsxxQ+
-        kx0g8BTA3aZlButjSTyjODq/WcQcW/B/Je4OQhLvKQDnzN1mp0nnkvAhR8VuMzNrpm1mpjgkoVwB/v8D
-        TgDQASA1MVpwzwAAAABJRU5ErkJggg==
-</value>
+  <data name="FileInheritance" xml:space="preserve">
+    <value />
   </data>
-  <data name="toolStripButton4.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIDSURBVDhPpZLrS5NhGMb3j4SWh0oRQVExD4gonkDpg4hG
-        YKxG6WBogkMZKgPNCEVJFBGdGETEvgwyO9DJE5syZw3PIlPEE9pgBCLZ5XvdMB8Ew8gXbl54nuf63dd9
-        0OGSnwCahxbPRNPAPMw9Xpg6ZmF46kZZ0xSKzJPIrhpDWsVnpBhGkKx3nAX8Pv7z1zg8OoY/cITdn4fw
-        bf/C0kYAN3Ma/w3gWfZL5kzTKBxjWyK2DftwI9tyMYCZKXbNHaD91bLYJrDXsYbrWfUKwJrPE9M2M1Oc
-        VzOOpHI7Jr376Hi9ogHqFIANO0/MmmmbmSmm9a8ze+I4MrNWAdjtoJgWcx+PSzg166yZZ8xM8XvXDix9
-        c4jIqFYAjoriBV9AhEPv1mH/sonogha0afbZMMZz+yreTGyhpusHwtNNCsA5U1zS4BLxzJIfg299qO32
-        Ir7UJtZfftyATqeT+8o2D8JSjQrAJblrncYL7ZJ2+bfaFnC/1S1NjL3diRat7qrO7wLRP3HjWsojBeCo
-        mDEo5mNjuweFGvjWg2EBhCbpkW78htSHHwRyNdmgAFzPEee2iFkzayy2OLXzT4gr6UdUnlXrullsxxQ+
-        kx0g8BTA3aZlButjSTyjODq/WcQcW/B/Je4OQhLvKQDnzN1mp0nnkvAhR8VuMzNrpm1mpjgkoVwB/v8D
-        TgDQASA1MVpwzwAAAABJRU5ErkJggg==
-</value>
+  <data name="FileInheritanceCI" xml:space="preserve">
+    <value />
   </data>
-  <metadata name="folderBrowserDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>323, 17</value>
-  </metadata>
-  <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>492, 17</value>
-  </metadata>
+  <data name="FileInheritanceCIOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileInheritanceIOCI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileInheritanceIOCIOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileInheritanceIOOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileInheritanceOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightAppendData" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightChangePermissions" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightDeleteSubdirectoriesAndFiles" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightExecuteFile" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightFullControl" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightListFolderContents" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightModify" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightRead" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightReadAndExecute" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightReadAttributes" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightReadData" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightReadExtendedAttributes" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightReadPermissions" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightReadWriteAndExecute" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightSpecial" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightWrite" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightWriteAttributes" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightWriteData" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FileRightWriteExtendedAttributes" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InheritedFromNone" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InheritedFromParent" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryInheritance" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryInheritanceCI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryInheritanceIOCI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightChangePermissions" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightCreateLink" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightCreateSubKey" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightEnumerateSubKeys" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightNotify" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightQueryValues" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightReadControl" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightSetValue" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegistryRightTakeOwnership" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritance" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritanceCI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritanceCIOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritanceIOCI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritanceIOCIOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritanceIOOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdInheritanceOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdRightDelete" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdRightSynchronize" xml:space="preserve">
+    <value />
+  </data>
+  <data name="StdRightTakeOwnership" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TaskRightExecute" xml:space="preserve">
+    <value />
+  </data>
 </root>

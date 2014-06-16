@@ -159,6 +159,9 @@
   <data name="FileRightFullControl" xml:space="preserve">
     <value>Full control</value>
   </data>
+  <data name="FileRightListFolderContents" xml:space="preserve">
+    <value>List folder contents</value>
+  </data>
   <data name="FileRightModify" xml:space="preserve">
     <value>Modify</value>
   </data>
@@ -204,6 +207,42 @@
   <data name="InheritedFromParent" xml:space="preserve">
     <value>Parent Object</value>
   </data>
+  <data name="RegistryInheritance" xml:space="preserve">
+    <value>This key only</value>
+  </data>
+  <data name="RegistryInheritanceCI" xml:space="preserve">
+    <value>This key and subkeys</value>
+  </data>
+  <data name="RegistryInheritanceIOCI" xml:space="preserve">
+    <value>Subkeys only</value>
+  </data>
+  <data name="RegistryRightChangePermissions" xml:space="preserve">
+    <value>Write DAC</value>
+  </data>
+  <data name="RegistryRightCreateLink" xml:space="preserve">
+    <value>Create Link</value>
+  </data>
+  <data name="RegistryRightCreateSubKey" xml:space="preserve">
+    <value>Create Subkey</value>
+  </data>
+  <data name="RegistryRightEnumerateSubKeys" xml:space="preserve">
+    <value>Enumerate Subkeys</value>
+  </data>
+  <data name="RegistryRightNotify" xml:space="preserve">
+    <value>Notify</value>
+  </data>
+  <data name="RegistryRightQueryValues" xml:space="preserve">
+    <value>Query Value</value>
+  </data>
+  <data name="RegistryRightReadControl" xml:space="preserve">
+    <value>Read Control</value>
+  </data>
+  <data name="RegistryRightSetValue" xml:space="preserve">
+    <value>Set Value</value>
+  </data>
+  <data name="RegistryRightTakeOwnership" xml:space="preserve">
+    <value>Write Owner</value>
+  </data>
   <data name="StdInheritance" xml:space="preserve">
     <value>This object</value>
   </data>
@@ -233,5 +272,8 @@
   </data>
   <data name="StdRightTakeOwnership" xml:space="preserve">
     <value>Take ownership</value>
+  </data>
+  <data name="TaskRightExecute" xml:space="preserve">
+    <value>Execute</value>
   </data>
 </root>

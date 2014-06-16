@@ -12,6 +12,9 @@ namespace Community.Security.AccessControl
 	[Flags]
 	public enum AccessFlags : uint
 	{
+		/// <summary>Indicates to ignore this access right.</summary>
+		Ignore = 0,
+
 		/// <summary>Indicates an access right that applies only to containers. If this flag is set, the access right is displayed on the basic security page only if the <see cref="Community.Windows.Forms.AccessControlEditorDialog.ObjectIsContainer"/> is <c>true</c>.</summary>
 		Container = 0x40000,
 
@@ -65,6 +68,9 @@ namespace Community.Security.AccessControl
 		/// <summary>The Advanced button is displayed on the basic security property page. If the user clicks this button, the system displays an advanced security property sheet that enables advanced editing of the discretionary access control list (DACL) of the object.</summary>
 		Advanced = 0x10,
 
+		/// <summary>If this flag is set, a shield is displayed on the Edit button of the advanced Auditing pages. For NTFS objects, this flag is requested when the user does not have READ_CONTROL or ACCESS_SYSTEM_SECURITY access. Windows Server 2003 and Windows XP:  This flag is not supported.</summary>
+		AuditElevationRequired = 0x2000000,
+
 		/// <summary>Indicates that the object is a container. If this flag is set, the access control editor enables the controls relevant to the inheritance of permissions onto child objects.</summary>
 		Container = 4,
 
@@ -105,6 +111,9 @@ namespace Community.Security.AccessControl
 		/// <summary>When set, indicates that the ObjectGuid property is valid. This is set in comparisons with object-specific ACEs in determining whether the ACE applies to the current object.</summary>
 		ObjectGuid = 0x10000,
 
+		/// <summary>If this flag is set, a shield is displayed on the Edit button of the advanced Owner page. For NTFS objects, this flag is requested when the user does not have WRITE_OWNER access. This flag is valid only if the owner page is requested. Windows Server 2003 and Windows XP:  This flag is not supported.</summary>
+		OwnerElevationRequired = 0x4000000,
+
 		/// <summary>If this flag is set, the user cannot change the owner of the object. Set this flag if EditOwner is set but the user does not have permission to change the owner.</summary>
 		OwnerReadOnly = 0x40,
 
@@ -113,6 +122,9 @@ namespace Community.Security.AccessControl
 
 		/// <summary>If this flag is set, the Title property value is used as the title of the basic security property page. Otherwise, a default title is used.</summary>
 		PageTitle = 0x800,
+
+		/// <summary>If this flag is set, an image of a shield is displayed on the Edit button of the simple and advanced Permissions pages. For NTFS objects, this flag is requested when the user does not have READ_CONTROL or WRITE_DAC access. Windows Server 2003 and Windows XP: This flag is not supported.</summary>
+		PermsElevationRequired = 0x1000000,
 
 		/// <summary>If this flag is set, the editor displays the object's security information, but the controls for editing the information are disabled. This flag cannot be combined with the ViewOnly flag.</summary>
 		ReadOnly = 8,
@@ -168,44 +180,45 @@ namespace Community.Security.AccessControl
 	}
 
 	/// <summary>
-	/// Page type of property sheet.
+	/// Page types used by the new advanced ACL UI
 	/// </summary>
-	public enum PropertySheetPageType : uint
+	public enum SecurityPageActivation : uint
 	{
-		/// <summary>Permissions page.</summary>
-		Permissions = 0,
-
-		/// <summary>Advanced page.</summary>
-		Advanced,
-
-		/// <summary>Audit page.</summary>
-		Audit,
-
-		/// <summary>Owner page.</summary>
-		Owner,
-
-		/// <summary>EffectiveRights page.</summary>
-		EffectiveRights,
-
-		/// <summary>TakeOwnership page.</summary>
-		TakeOwnership,
-
-		/// <summary>Share page.</summary>
-		Share
+		/// <summary></summary>
+		ShowDefault = 0,
+		/// <summary></summary>
+		ShowPermActivated,
+		/// <summary></summary>
+		ShowAuditActivated,
+		/// <summary></summary>
+		ShowOwnerActivated,
+		/// <summary></summary>
+		ShowEffectiveActivated,
+		/// <summary></summary>
+		ShowShareActivated,
+		/// <summary></summary>
+		ShowCentralPolicyActivated,
 	}
 
 	/// <summary>
 	/// Values that indicate the types of property pages in an access control editor property sheet.
 	/// </summary>
-	public enum SecurityPageType
+	public enum SecurityPageType : uint
 	{
+		/// <summary>Permissions page.</summary>
 		BasicPermissions = 0,
+		/// <summary>Advanced page.</summary>
 		AdvancedPermissions,
+		/// <summary>Audit page.</summary>
 		Audit,
+		/// <summary>Owner page.</summary>
 		Owner,
-		EffectivePermissions,
+		/// <summary>Effective Rights page.</summary>
+		EffectiveRights,
+		/// <summary>Take Ownership page.</summary>
 		TakeOwnership,
-		Share,
+		/// <summary>Share page.</summary>
+		Share
 	}
 
 	[Flags]
@@ -268,7 +281,7 @@ namespace Community.Security.AccessControl
 
 		void GetInheritTypes([MarshalAs(UnmanagedType.LPArray)]out InheritTypeInfo[] InheritType, out uint InheritTypesCount);
 
-		void PropertySheetPageCallback([In] IntPtr hwnd, [In] PropertySheetCallbackMessage uMsg, [In] PropertySheetPageType uPage);
+		void PropertySheetPageCallback([In] IntPtr hwnd, [In] PropertySheetCallbackMessage uMsg, [In] SecurityPageType uPage);
 	}
 
 	[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("c3ccfdb4-6f88-11d2-a3ce-00c04fb1782a")]
@@ -282,8 +295,8 @@ namespace Community.Security.AccessControl
 	[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("E2CDC9CC-31BD-4f8f-8C8B-B641AF516A1A")]
 	internal interface ISecurityInformation3
 	{
-		//STDMETHOD(GetFullResourceName) (THIS_ _Outptr_ LPWSTR *ppszResourceName) PURE;
-		//STDMETHOD(OpenElevatedEditor) (THIS_ _In_ HWND hWnd, _In_ SI_PAGE_TYPE uPage) PURE;
+		void GetFullResourceName(out string szResourceName);
+		void OpenElevatedEditor([In] IntPtr hWnd, [In] uint uPage);
 	}
 
 	[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA961070-CD14-4621-ACE4-F63C03E583E4")]
@@ -419,6 +432,11 @@ namespace Community.Security.AccessControl
 		{
 			this.GenerationGap = generationGap;
 			this.AncestorName = ancestorName;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} : 0x{1:X}", AncestorName, GenerationGap);
 		}
 
 		/// <summary>ACE is explicit.</summary>
@@ -624,15 +642,19 @@ namespace Community.Security.AccessControl
 		}
 	}
 
-	internal class SecurityInfoImpl : ISecurityInformation //, ISecurityObjectTypeInfo, IEffectivePermission
+	internal class SecurityInfoImpl : ISecurityInformation, ISecurityInformation3, ISecurityObjectTypeInfo, IEffectivePermission
 	{
 		internal SI_OBJECT_INFO ObjectInfo;
+		private ObjInfoFlags currentElevation;
+		private string fullObjectName;
 		private IAccessControlEditorDialogProvider prov;
 		private MarshaledMem pSD;
 
-		public SecurityInfoImpl(ObjInfoFlags flags, string objectName, string serverName = null, string pageTitle = null)
+		public SecurityInfoImpl(ObjInfoFlags flags, string objectName, string fullName, string serverName = null, string pageTitle = null)
 		{
 			ObjectInfo = new SI_OBJECT_INFO(flags, objectName, serverName, pageTitle);
+			currentElevation = 0; // flags & (ObjInfoFlags.OwnerElevationRequired | ObjInfoFlags.AuditElevationRequired | ObjInfoFlags.PermsElevationRequired);
+			fullObjectName = fullName;
 		}
 
 		public event SecurityEvent OnSetSecurity;
@@ -643,7 +665,7 @@ namespace Community.Security.AccessControl
 			set { pSD = new MarshaledMem(value); }
 		}
 
-		/*void IEffectivePermission.GetEffectivePermission(Guid pguidObjectType, IntPtr pUserSid, string pszServerName, IntPtr pSD, out ObjectTypeInfo[] ppObjectTypeList, out uint pcObjectTypeListLength, out uint[] ppGrantedAccessList, out uint pcGrantedAccessListLength)
+		void IEffectivePermission.GetEffectivePermission(Guid pguidObjectType, IntPtr pUserSid, string pszServerName, IntPtr pSD, out ObjectTypeInfo[] ppObjectTypeList, out uint pcObjectTypeListLength, out uint[] ppGrantedAccessList, out uint pcGrantedAccessListLength)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("GetEffectivePermission: {0}, {1}", pguidObjectType, pszServerName));
 			if (pguidObjectType == Guid.Empty)
@@ -659,14 +681,14 @@ namespace Community.Security.AccessControl
 				pcGrantedAccessListLength = (uint)ppGrantedAccessList.Length;
 				pcObjectTypeListLength = (uint)ppObjectTypeList.Length;
 			}
-		}*/
+		}
 
 		void ISecurityInformation.GetAccessRights(Guid guidObject, int dwFlags, out AccessRightInfo[] access, ref uint access_count, out uint DefaultAccess)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format("GetAccessRight: {0}, {1}", guidObject, dwFlags));
+			System.Diagnostics.Debug.WriteLine(string.Format("GetAccessRight: {0}, {1}", guidObject, (ObjInfoFlags)dwFlags));
 			uint defAcc;
 			AccessRightInfo[] ari;
-			this.prov.GetAccessListInfo(out ari, out defAcc);
+			this.prov.GetAccessListInfo((ObjInfoFlags)dwFlags, out ari, out defAcc);
 			DefaultAccess = defAcc;
 			access = ari;
 			access_count = (uint)access.Length;
@@ -681,25 +703,29 @@ namespace Community.Security.AccessControl
 
 		void ISecurityInformation.GetObjectInformation(ref SI_OBJECT_INFO object_info)
 		{
-			System.Diagnostics.Debug.WriteLine("GetObjectInformation");
+			System.Diagnostics.Debug.WriteLine(string.Format("GetObjectInformation: {0} {1}", this.ObjectInfo.Flags, this.currentElevation));
 			object_info = this.ObjectInfo;
+			object_info.Flags &= ~(this.currentElevation);
 		}
 
 		void ISecurityInformation.GetSecurity(int RequestInformation, out IntPtr ppSecurityDescriptor, bool fDefault)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity: {0}{1}", RequestInformation, fDefault ? " (Def)" : ""));
+			System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity: {0}{1}", (SecurityInfos)RequestInformation, fDefault ? " (Def)" : ""));
 			ppSecurityDescriptor = Helper.GetPrivateObjectSecurity(fDefault ? this.prov.GetDefaultSecurity() : pSD.Ptr, RequestInformation);
 			//System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity={0}<-{1}", Helper.SecurityDescriptorPtrToSDLL(ppSecurityDescriptor, RequestInformation), Helper.SecurityDescriptorPtrToSDLL(pSD.Ptr, RequestInformation)));
 		}
 
 		void ISecurityInformation.MapGeneric(Guid guidObjectType, ref sbyte AceFlags, ref uint Mask)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format("MapGeneric: {0}, {1}, {2}", guidObjectType, AceFlags, Mask));
-			GenericRightsMapping gm = this.prov.GetGenericMapping();
+			uint stMask = Mask;
+			GenericRightsMapping gm = this.prov.GetGenericMapping(AceFlags);
 			Helper.MapGenericMask(ref Mask, ref gm);
+			//if (Mask != gm.GenericAll)
+			//	Mask &= ~(uint)FileSystemRights.Synchronize;
+			System.Diagnostics.Debug.WriteLine(string.Format("MapGeneric: {0}, {1}, 0x{2:X}->0x{3:X}", guidObjectType, (AceFlags)AceFlags, stMask, Mask));
 		}
 
-		void ISecurityInformation.PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, PropertySheetPageType uPage)
+		void ISecurityInformation.PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, SecurityPageType uPage)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("PropertySheetPageCallback: {0}, {1}, {2}", hwnd, uMsg, uPage));
 			this.prov.PropertySheetPageCallback(hwnd, uMsg, uPage);
@@ -711,34 +737,74 @@ namespace Community.Security.AccessControl
 				OnSetSecurity(new SecurityEventArg(sd, RequestInformation));
 		}
 
-		/*void ISecurityObjectTypeInfo.GetInheritSource(int si, IntPtr pACL, out InheritedFromInfo[] ppInheritArray)
+		void ISecurityInformation3.GetFullResourceName(out string szResourceName)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format("GetInheritSource: {0}", si));
-			ppInheritArray = this.prov.GetInheritSource(this.ObjectInfo.ObjectName, this.ObjectInfo.IsContainer, (uint)si, pACL);
-		}*/
+			szResourceName = this.fullObjectName;
+		}
+
+		void ISecurityInformation3.OpenElevatedEditor(IntPtr hWnd, uint uPage)
+		{
+			SecurityPageType pgType = (SecurityPageType)(uPage & 0x0000FFFF);
+			SecurityPageActivation pgActv = (SecurityPageActivation)((uPage >> 16) & 0x0000FFFF);
+			System.Diagnostics.Debug.WriteLine(string.Format("OpenElevatedEditor: {0} - {1}", pgType, pgActv));
+			ObjInfoFlags lastElev = this.currentElevation;
+			switch (pgActv)
+			{
+				case SecurityPageActivation.ShowDefault:
+					this.currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
+					break;
+				case SecurityPageActivation.ShowPermActivated:
+					this.currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
+					pgType = SecurityPageType.AdvancedPermissions;
+					break;
+				case SecurityPageActivation.ShowAuditActivated:
+					this.currentElevation |= ObjInfoFlags.AuditElevationRequired;
+					pgType = SecurityPageType.Audit;
+					break;
+				case SecurityPageActivation.ShowOwnerActivated:
+					this.currentElevation |= ObjInfoFlags.OwnerElevationRequired;
+					pgType = SecurityPageType.Owner;
+					break;
+				case SecurityPageActivation.ShowEffectiveActivated:
+					break;
+				case SecurityPageActivation.ShowShareActivated:
+					break;
+				case SecurityPageActivation.ShowCentralPolicyActivated:
+					break;
+				default:
+					break;
+			}
+			this.ShowDialog(hWnd, pgType, pgActv);
+			this.currentElevation = lastElev;
+		}
+
+		void ISecurityObjectTypeInfo.GetInheritSource(int si, IntPtr pACL, out InheritedFromInfo[] ppInheritArray)
+		{
+			System.Diagnostics.Debug.WriteLine(string.Format("GetInheritSource: {0}", (SecurityInfos)si));
+			ppInheritArray = this.prov.GetInheritSource(this.fullObjectName, this.ObjectInfo.ServerName, this.ObjectInfo.IsContainer, (uint)si, pACL);
+		}
 
 		public void SetProvider(IAccessControlEditorDialogProvider provider)
 		{
 			prov = provider;
 		}
 
-		public RawSecurityDescriptor ShowDialog(IntPtr hWnd, SecurityPageType pageType = SecurityPageType.BasicPermissions)
+		public RawSecurityDescriptor ShowDialog(IntPtr hWnd, SecurityPageType pageType = SecurityPageType.BasicPermissions, SecurityPageActivation pageAct = SecurityPageActivation.ShowDefault)
 		{
 			SecurityEventArg sd = null;
 			SecurityEvent fn = delegate(SecurityEventArg e) { sd = e; };
 			try
 			{
 				this.OnSetSecurity += fn;
-				if (System.Environment.OSVersion.Version.Major == 5 || pageType == SecurityPageType.BasicPermissions)
+				if (System.Environment.OSVersion.Version.Major == 5 || (pageType == SecurityPageType.BasicPermissions && pageAct == SecurityPageActivation.ShowDefault))
 				{
 					if (!Helper.EditSecurity(hWnd, this))
 						Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
 				}
 				else
 				{
-					int res = Helper.EditSecurityAdvanced(hWnd, this, pageType);
-					if (res != 0)
-						Marshal.ThrowExceptionForHR(res);
+					uint uPage = (uint)pageType & ((uint)pageAct << 16);
+					Helper.EditSecurityAdvanced(hWnd, this, pageType);
 				}
 				if (sd != null)
 				{

@@ -14,11 +14,11 @@ namespace Community.Windows.Forms
 		/// <summary>Psuedo type cast for a Task specific ResourceType.</summary>
 		public const System.Security.AccessControl.ResourceType TaskResourceType = (System.Security.AccessControl.ResourceType)99;
 
-		private static ObjInfoFlags defaultFlags = ObjInfoFlags.EditAll | ObjInfoFlags.Advanced | ObjInfoFlags.NoAclProtect;
+		private static ObjInfoFlags defaultFlags = ObjInfoFlags.EditAll | ObjInfoFlags.Advanced | ObjInfoFlags.ViewOnly;
 
+		private ObjInfoFlags flags = defaultFlags;
 		private SecurityInfoImpl iSecInfo;
 		private string objectName, serverName, title;
-		private ObjInfoFlags flags = defaultFlags;
 		private System.Security.AccessControl.ResourceType resType = System.Security.AccessControl.ResourceType.Unknown;
 
 		/// <summary>
@@ -26,6 +26,8 @@ namespace Community.Windows.Forms
 		/// </summary>
 		public AccessControlEditorDialog()
 		{
+			if (System.Threading.Thread.CurrentThread.GetApartmentState() != System.Threading.ApartmentState.STA)
+				throw new InvalidOperationException("Current thread must be STA in order to use the AccessControlEditorDialog.");
 			PageType = SecurityPageType.BasicPermissions;
 		}
 
@@ -95,6 +97,23 @@ namespace Community.Windows.Forms
 		{
 			get { return this.HasFlag(ObjInfoFlags.NoAclProtect); }
 			set { this.SetFlag(ObjInfoFlags.NoAclProtect, value); }
+		}
+
+		/// <summary>
+		/// Gets or sets the display name.
+		/// </summary>
+		/// <value>
+		/// The display name.
+		/// </value>
+		public string DisplayName
+		{
+			get { return this.objectName; }
+			set
+			{
+				this.objectName = value;
+				if (this.iSecInfo != null)
+					this.iSecInfo.ObjectInfo.ObjectName = value;
+			}
 		}
 
 		/// <summary>If this flag is set, the system enables controls for editing ACEs that apply to the object's property sets and properties. These controls are available only on the property sheet displayed when the user clicks the Advanced button.</summary>
@@ -196,6 +215,14 @@ namespace Community.Windows.Forms
 		{
 			get { return this.HasFlag(ObjInfoFlags.ReadOnly); }
 			set { if (value) this.SetFlag(ObjInfoFlags.ViewOnly, false); this.SetFlag(ObjInfoFlags.ReadOnly, value); }
+		}
+
+		/// <summary>If this flag is set, the editor displays the object's security information, but the controls for editing the information are disabled. This flag cannot be combined with the EditOnly flag.</summary>
+		[DefaultValue(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public bool ViewOnly
+		{
+			get { return this.HasFlag(ObjInfoFlags.ViewOnly); }
+			set { if (value) this.SetFlag(ObjInfoFlags.ReadOnly, false); this.SetFlag(ObjInfoFlags.ViewOnly, value); }
 		}
 
 		/// <summary>
@@ -303,14 +330,38 @@ namespace Community.Windows.Forms
 			set { this.SetFlag(ObjInfoFlags.ResetDacl, value, true); }
 		}
 
+		/// <summary>When set, this flag displays a shield on the Edit button of the advanced Auditing pages.</summary>
+		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public bool AuditElevationRequired
+		{
+			get { return this.HasFlag(ObjInfoFlags.AuditElevationRequired); }
+			set { this.SetFlag(ObjInfoFlags.AuditElevationRequired, value, true); }
+		}
+
+		/// <summary>When set, this flag displays a shield on the Edit button of the advanced Owner page.</summary>
+		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public bool OwnerElevationRequired
+		{
+			get { return this.HasFlag(ObjInfoFlags.OwnerElevationRequired); }
+			set { this.SetFlag(ObjInfoFlags.OwnerElevationRequired, value, true); }
+		}
+
+		/// <summary>When set, this flag displays a shield on the Edit button of the simple and advanced Permissions pages.</summary>
+		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public bool ElevationRequired
+		{
+			get { return this.HasFlag(ObjInfoFlags.PermsElevationRequired); }
+			set { this.SetFlag(ObjInfoFlags.PermsElevationRequired, value, true); }
+		}
+
 		/// <summary>
-		/// Gets or sets the title of the dialog. If this value is not set, a default will be used.
+		/// Gets or sets the title of the property page tab. If this value is not set, a default will be used.
 		/// </summary>
 		/// <value>
 		/// The title.
 		/// </value>
 		[DefaultValue((string)null), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public string Title
+		public string TabTitle
 		{
 			get { return this.title; }
 			set { this.title = value; if (this.iSecInfo != null) this.iSecInfo.ObjectInfo.PageTitle = value; this.CustomPageTitle = !string.IsNullOrEmpty(value); }
@@ -343,165 +394,37 @@ namespace Community.Windows.Forms
 		public void Initialize(object knownObject)
 		{
 			SecuredObject secObject = new SecuredObject(knownObject);
-			Initialize(secObject.DisplayName, secObject.IsContainer, ProviderFromResourceType(secObject.ResourceType),
+			Initialize(secObject.DisplayName, secObject.ObjectName, secObject.IsContainer, ProviderFromResourceType(secObject.ResourceType),
 				secObject.ObjectSecurity.GetSecurityDescriptorBinaryForm(), secObject.TargetServer);
 			this.ResourceType = secObject.ResourceType;
 		}
 
-		/// <summary>Initializes the dialog with the specified known object.</summary>
-		/// <param name="objName">Name of the object.</param>
+		/// <summary>
+		/// Initializes the dialog with the specified known object.
+		/// </summary>
+		/// <param name="fullObjectName">Full name of the object.</param>
 		/// <param name="serverName">Name of the server. This value can be <c>null</c>.</param>
 		/// <param name="resourceType">Type of the object resource.</param>
 		/// <exception cref="System.ArgumentException">Unable to create an object from supplied arguments.</exception>
-		public void Initialize(string objName, string serverName, System.Security.AccessControl.ResourceType resourceType)
+		public void Initialize(string fullObjectName, string serverName, System.Security.AccessControl.ResourceType resourceType)
 		{
-			object obj = null;
-			switch (resourceType)
-			{
-				case System.Security.AccessControl.ResourceType.FileObject:
-					if (!string.IsNullOrEmpty(serverName))
-						objName = System.IO.Path.Combine(serverName, objName);
-					if (System.IO.File.Exists(objName))
-						obj = new System.IO.FileInfo(objName);
-					else if (System.IO.Directory.Exists(objName))
-						obj = new System.IO.DirectoryInfo(objName);
-					break;
-				case System.Security.AccessControl.ResourceType.RegistryKey:
-					obj = GetKeyFromKeyName(objName, serverName);
-					break;
-				case TaskResourceType:
-					obj = GetTaskObj(objName, serverName);
-					break;
-				default:
-					break;
-			}
-			if (obj == null)
-				throw new ArgumentException("Unable to create an object from supplied arguments.");
-			Initialize(obj);
-		}
-
-		internal bool ShouldSerializeFlags()
-		{
-			return (this.flags != defaultFlags);
-		}
-
-		internal void ResetFlags()
-		{
-			this.flags = defaultFlags;
-		}
-
-		private static object GetTaskObj(string objName, string serverName)
-		{
-			try
-			{
-				System.Reflection.Assembly asm = System.Reflection.Assembly.LoadFrom("Microsoft.Win32.TaskScheduler.dll");
-				if (asm != null)
-				{
-					Type tsType = asm.GetType("Microsoft.Win32.TaskScheduler.TaskService", false, false);
-					if (tsType != null)
-					{
-						object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
-						if (ts != null)
-						{
-							System.Reflection.MethodInfo mi = tsType.GetMethod("GetFolder", new Type[] { typeof(string) });
-							if (mi != null)
-							{
-								try
-								{
-									object r = mi.Invoke(ts, new object[] { objName });
-									if (r != null)
-										return r;
-								}
-								catch { }
-							}
-
-							mi = tsType.GetMethod("GetTask", new Type[] { typeof(string) });
-							if (mi != null)
-							{
-								try
-								{
-									object r = mi.Invoke(ts, new object[] { objName });
-									if (r != null)
-										return r;
-								}
-								catch { }
-							}
-						}
-					}
-				}
-			}
-			catch { }
-			return null;
-		}
-
-		private static Microsoft.Win32.RegistryKey GetKeyFromKeyName(string keyName, string serverName)
-		{
-			if (keyName == null)
-				return null;
-
-			string str;
-			int index = keyName.IndexOf('\\');
-			if (index != -1)
-				str = keyName.Substring(0, index).ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-			else
-				str = keyName.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-
-			Microsoft.Win32.RegistryHive hive;
-			switch (str)
-			{
-				case "HKEY_CURRENT_USER":
-					hive = Microsoft.Win32.RegistryHive.CurrentUser;
-					break;
-
-				case "HKEY_LOCAL_MACHINE":
-					hive = Microsoft.Win32.RegistryHive.LocalMachine;
-					break;
-
-				case "HKEY_CLASSES_ROOT":
-					hive = Microsoft.Win32.RegistryHive.ClassesRoot;
-					break;
-
-				case "HKEY_USERS":
-					hive = Microsoft.Win32.RegistryHive.Users;
-					break;
-
-				case "HKEY_PERFORMANCE_DATA":
-					hive = Microsoft.Win32.RegistryHive.PerformanceData;
-					break;
-
-				case "HKEY_CURRENT_CONFIG":
-					hive = Microsoft.Win32.RegistryHive.CurrentConfig;
-					break;
-
-				default:
-					return null;
-			}
-
-			if (serverName == null)
-				serverName = string.Empty;
-
-			Microsoft.Win32.RegistryKey retVal = Microsoft.Win32.RegistryKey.OpenRemoteBaseKey(hive, serverName);
-
-			if ((index == -1) || (index == keyName.Length))
-				return retVal;
-
-			string subKeyName = keyName.Substring(index + 1, (keyName.Length - index) - 1);
-			return retVal.OpenSubKey(subKeyName);
+			Initialize(SecuredObject.GetKnownObject(resourceType, fullObjectName, serverName));
 		}
 
 		/// <summary>
 		/// Initializes the dialog with a custom provider.
 		/// </summary>
 		/// <param name="displayName">The object name.</param>
+		/// <param name="fullObjectName">Full name of the object.</param>
 		/// <param name="isContainer">Set to <c>true</c> if object is a container.</param>
 		/// <param name="customProvider">The custom provider.</param>
 		/// <param name="sd">The binary Security Descriptor.</param>
 		/// <param name="targetServer">The target server.</param>
-		public void Initialize(string displayName, bool isContainer, IAccessControlEditorDialogProvider customProvider, byte[] sd, string targetServer = null)
+		public void Initialize(string displayName, string fullObjectName, bool isContainer, IAccessControlEditorDialogProvider customProvider, byte[] sd, string targetServer = null)
 		{
 			if (isContainer)
 				this.ObjectIsContainer = true;
-			this.iSecInfo = new SecurityInfoImpl(defaultFlags, displayName, targetServer);
+			this.iSecInfo = new SecurityInfoImpl(this.flags, displayName, fullObjectName, targetServer);
 			this.ResourceType = System.Security.AccessControl.ResourceType.Unknown;
 			this.Result = new System.Security.AccessControl.RawSecurityDescriptor(sd, 0);
 			this.iSecInfo.SecurityDescriptor = sd;
@@ -521,14 +444,25 @@ namespace Community.Windows.Forms
 		/// Initializes the dialog with a known resource type.
 		/// </summary>
 		/// <param name="displayName">The display name.</param>
+		/// <param name="fullName">The full name.</param>
 		/// <param name="isContainer">if set to <c>true</c> [is container].</param>
 		/// <param name="resourceType">Type of the resource.</param>
 		/// <param name="sd">The sd.</param>
 		/// <param name="targetServer">The target server.</param>
-		internal void Initialize(string displayName, bool isContainer, System.Security.AccessControl.ResourceType resourceType, byte[] sd, string targetServer = null)
+		internal void Initialize(string displayName, string fullName, bool isContainer, System.Security.AccessControl.ResourceType resourceType, byte[] sd, string targetServer = null)
 		{
-			Initialize(displayName, isContainer, ProviderFromResourceType(resourceType), sd, targetServer);
+			Initialize(displayName, fullName, isContainer, ProviderFromResourceType(resourceType), sd, targetServer);
 			this.ResourceType = resourceType;
+		}
+
+		internal void ResetFlags()
+		{
+			this.flags = defaultFlags;
+		}
+
+		internal bool ShouldSerializeFlags()
+		{
+			return (this.flags != defaultFlags);
 		}
 
 		/// <summary>

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Community.Security.AccessControl")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyCompany("CodePlex Community")]
 [assembly: AssemblyProduct("Community.Security.AccessControl")]
-[assembly: AssemblyCopyright("Copyright © Hewlett-Packard Company 2014")]
+[assembly: AssemblyCopyright("Copyright © 2014 CodePlex Community")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
