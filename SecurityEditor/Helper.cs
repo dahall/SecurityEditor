@@ -214,6 +214,11 @@ namespace Community.Security.AccessControl
 				}
 				return base.Equals(obj);
 			}
+
+			public override int GetHashCode()
+			{
+				return new { A = Header.AceFlags, B = Header.AceType, C = Mask }.GetHashCode();
+			}
 		}
 
 		[StructLayout(LayoutKind.Sequential)]

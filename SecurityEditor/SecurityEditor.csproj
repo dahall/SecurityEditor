@@ -42,8 +42,10 @@
     <Compile Include="AccessControlEditorDialog.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="AclUI.cs" />
-    <Compile Include="Helper.cs" />
+    <Compile Include="Native\AccCtrl.cs" />
+    <Compile Include="Native\AccCtrlHelper.cs" />
+    <Compile Include="Native\AclUI-Public.cs" />
+    <Compile Include="Native\AclUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.fr.Designer.cs">
       <DependentUpon>Resources.fr.resx</DependentUpon>
@@ -56,7 +58,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Providers.cs" />
+    <Compile Include="ReflectionHelper.cs" />
     <Compile Include="SecuredObject.cs" />
+    <Compile Include="SecurityInfoImpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.fr.resx">

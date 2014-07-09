@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 
@@ -49,16 +50,16 @@ namespace Community.Security.AccessControl
 		/// <param name="pSecurityDescriptor">A pointer to the security descriptor.</param>
 		/// <param name="objectTypeList">The object type list.</param>
 		/// <returns>An array of access masks.</returns>
-		uint[] GetEffectivePermission(Guid objTypeId, IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor, out ObjectTypeInfo[] objectTypeList);
+		uint[] GetEffectivePermission(Guid objTypeId, IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor, out ObjectTypeList[] objectTypeList);
 
 		/// <summary>
 		/// Gets the generic mapping for standard rights.
 		/// </summary>
 		/// <param name="AceFlags">The ace flags.</param>
 		/// <returns>
-		/// A <see cref="GenericRightsMapping" /> structure fror this object type.
+		/// A <see cref="GenericMapping" /> structure fror this object type.
 		/// </returns>
-		GenericRightsMapping GetGenericMapping(sbyte AceFlags);
+		GenericMapping GetGenericMapping(sbyte AceFlags);
 
 		/// <summary>
 		/// Determines the source of inherited access control entries (ACEs) in discretionary access control lists (DACLs) and system access control lists (SACLs).
@@ -107,6 +108,7 @@ namespace Community.Security.AccessControl
 		/// <summary>
 		/// Gets an array of <see cref="AccessRightInfo" /> structures which define how to display differnt access rights supplied to the editor along with the index of the access right that should be applied to new ACEs.
 		/// </summary>
+		/// <param name="flags">A set of bit flags that indicate the property page being initialized. This value is zero if the basic security page is being initialized.</param>
 		/// <param name="rights">The access right information for each right.</param>
 		/// <param name="defaultIndex">The default index in the <paramref name="rights" /> array for new ACEs.</param>
 		virtual public void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
@@ -139,7 +141,7 @@ namespace Community.Security.AccessControl
 		/// </returns>
 		virtual public uint[] GetEffectivePermission(IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor)
 		{
-			uint mask = Helper.GetEffectiveRights(pUserSid, pSecurityDescriptor);
+			uint mask = NativeMethods.GetEffectiveRights(pUserSid, pSecurityDescriptor);
 			return new uint[] { mask };
 		}
 
@@ -155,7 +157,7 @@ namespace Community.Security.AccessControl
 		/// An array of access masks.
 		/// </returns>
 		/// <exception cref="System.NotImplementedException"></exception>
-		virtual public uint[] GetEffectivePermission(Guid objTypeId, IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor, out ObjectTypeInfo[] objectTypeList)
+		virtual public uint[] GetEffectivePermission(Guid objTypeId, IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor, out ObjectTypeList[] objectTypeList)
 		{
 			throw new NotImplementedException();
 		}
@@ -164,11 +166,11 @@ namespace Community.Security.AccessControl
 		/// Gets the generic mapping for standard rights.
 		/// </summary>
 		/// <returns>
-		/// A <see cref="GenericRightsMapping" /> structure fror this object type.
+		/// A <see cref="GenericMapping" /> structure fror this object type.
 		/// </returns>
-		virtual public GenericRightsMapping GetGenericMapping(sbyte AceFlags)
+		virtual public GenericMapping GetGenericMapping(sbyte AceFlags)
 		{
-			return new GenericRightsMapping(0x80000000, 0x40000000, 0x20000000, 0x10000000);
+			return new GenericMapping(0x80000000, 0x40000000, 0x20000000, 0x10000000);
 		}
 
 		/// <summary>
@@ -184,8 +186,8 @@ namespace Community.Security.AccessControl
 		/// </returns>
 		virtual public InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
-			GenericRightsMapping gMap = this.GetGenericMapping(0);
-			return Helper.GetInheritanceSource(objName, this.ResourceType, (SecurityInfos)si, isContainer, pAcl, ref gMap);
+			GenericMapping gMap = this.GetGenericMapping(0);
+			return NativeMethods.GetInheritanceSource(objName, this.ResourceType, (SecurityInfos)si, isContainer, pAcl, ref gMap);
 		}
 
 		/// <summary>
@@ -275,9 +277,9 @@ namespace Community.Security.AccessControl
 			// TODO: This should return the parent's security or a default access if root.
 		}
 
-		public override GenericRightsMapping GetGenericMapping(sbyte AceFlags)
+		public override GenericMapping GetGenericMapping(sbyte AceFlags)
 		{
-			return new GenericRightsMapping((uint)(FileSystemRights.Read | FileSystemRights.Synchronize),
+			return new GenericMapping((uint)(FileSystemRights.Read | FileSystemRights.Synchronize),
 				(uint)(FileSystemRights.Write | FileSystemRights.Synchronize),
 				0x1200A0,
 				(uint)FileSystemRights.FullControl);
@@ -338,9 +340,9 @@ namespace Community.Security.AccessControl
 			// TODO: This should return the parent's security or a default access if root.
 		}
 
-		public override GenericRightsMapping GetGenericMapping(sbyte AceFlags)
+		public override GenericMapping GetGenericMapping(sbyte AceFlags)
 		{
-			return new GenericRightsMapping((uint)RegistryRights.ReadKey, (uint)RegistryRights.WriteKey, (uint)RegistryRights.ExecuteKey, (uint)RegistryRights.FullControl);
+			return new GenericMapping((uint)RegistryRights.ReadKey, (uint)RegistryRights.WriteKey, (uint)RegistryRights.ExecuteKey, (uint)RegistryRights.FullControl);
 		}
 
 		public override InheritTypeInfo[] GetInheritTypes()
@@ -412,15 +414,15 @@ namespace Community.Security.AccessControl
 			// TODO: This should return the parent's security or a default access if root.
 		}
 
-		public override GenericRightsMapping GetGenericMapping(sbyte AceFlags)
+		public override GenericMapping GetGenericMapping(sbyte AceFlags)
 		{
-			return new GenericRightsMapping(0x120089, 0x120116, 0x1200A0, 0x1F01FF);
+			return new GenericMapping(0x120089, 0x120116, 0x1200A0, 0x1F01FF);
 		}
 
 		public override InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
 			object obj = SecuredObject.GetKnownObject(Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType, objName, serverName);
-			RawAcl acl = Helper.RawAclFromPtr(pAcl);
+			RawAcl acl = NativeMethods.RawAclFromPtr(pAcl);
 
 			// Get list of all parents
 			var parents = new System.Collections.Generic.List<object>();
@@ -435,7 +437,7 @@ namespace Community.Security.AccessControl
 			for (int i = 0; i < acl.Count; i++)
 			{
 			}
-			return new InheritedFromInfo[Helper.GetAceCount(pAcl)];
+			return new InheritedFromInfo[NativeMethods.GetAceCount(pAcl)];
 		}
 	}
 }

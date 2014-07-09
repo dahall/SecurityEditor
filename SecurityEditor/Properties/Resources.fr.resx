@@ -118,162 +118,162 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccessControlTypeAllow" xml:space="preserve">
-    <value />
+    <value>Autoriser</value>
   </data>
   <data name="AccessControlTypeDeny" xml:space="preserve">
-    <value />
+    <value>Refuser</value>
   </data>
   <data name="FileInheritance" xml:space="preserve">
-    <value />
+    <value>Ce dossier uniquement</value>
   </data>
   <data name="FileInheritanceCI" xml:space="preserve">
-    <value />
+    <value>Ce dossier et les sous-dossiers</value>
   </data>
   <data name="FileInheritanceCIOI" xml:space="preserve">
-    <value />
+    <value>Ce dossier, les sous-dossiers et les fichiers</value>
   </data>
   <data name="FileInheritanceIOCI" xml:space="preserve">
-    <value />
+    <value>Les sous-dossiers seulement</value>
   </data>
   <data name="FileInheritanceIOCIOI" xml:space="preserve">
-    <value />
+    <value>Les sous-dossiers et les fichiers seulement</value>
   </data>
   <data name="FileInheritanceIOOI" xml:space="preserve">
-    <value />
+    <value>Fichiers seulement</value>
   </data>
   <data name="FileInheritanceOI" xml:space="preserve">
-    <value />
+    <value>Ce dossier et les fichiers</value>
   </data>
   <data name="FileRightAppendData" xml:space="preserve">
-    <value />
+    <value>Création de dossier/ajout de données</value>
   </data>
   <data name="FileRightChangePermissions" xml:space="preserve">
-    <value />
+    <value>Modifier les autorisations</value>
   </data>
   <data name="FileRightDeleteSubdirectoriesAndFiles" xml:space="preserve">
-    <value />
+    <value>Supprimer les sous-dossiers et les fichiers</value>
   </data>
   <data name="FileRightExecuteFile" xml:space="preserve">
-    <value />
+    <value>Parcours du dossier/exécuter le fichier</value>
   </data>
   <data name="FileRightFullControl" xml:space="preserve">
-    <value />
+    <value>Contrôle total</value>
   </data>
   <data name="FileRightListFolderContents" xml:space="preserve">
-    <value />
+    <value>Affichage du contenu du dossier</value>
   </data>
   <data name="FileRightModify" xml:space="preserve">
-    <value />
+    <value>Modifier</value>
   </data>
   <data name="FileRightRead" xml:space="preserve">
-    <value />
+    <value>Lire</value>
   </data>
   <data name="FileRightReadAndExecute" xml:space="preserve">
-    <value />
+    <value>Lecture et exécution</value>
   </data>
   <data name="FileRightReadAttributes" xml:space="preserve">
-    <value />
+    <value>Attributs de lecture</value>
   </data>
   <data name="FileRightReadData" xml:space="preserve">
-    <value />
+    <value>Liste du dossier/lecture de données</value>
   </data>
   <data name="FileRightReadExtendedAttributes" xml:space="preserve">
-    <value />
+    <value>Lire les attributs étendus</value>
   </data>
   <data name="FileRightReadPermissions" xml:space="preserve">
-    <value />
+    <value>Autorisations de lecture</value>
   </data>
   <data name="FileRightReadWriteAndExecute" xml:space="preserve">
-    <value />
+    <value>Lire, écrire &amp; exécuter</value>
   </data>
   <data name="FileRightSpecial" xml:space="preserve">
-    <value />
+    <value>autorisations spéciales</value>
   </data>
   <data name="FileRightWrite" xml:space="preserve">
-    <value />
+    <value>Écriture</value>
   </data>
   <data name="FileRightWriteAttributes" xml:space="preserve">
-    <value />
+    <value>Attributs d'écriture</value>
   </data>
   <data name="FileRightWriteData" xml:space="preserve">
-    <value />
+    <value>Création de fichier/écriture de données</value>
   </data>
   <data name="FileRightWriteExtendedAttributes" xml:space="preserve">
-    <value />
+    <value>Écriture d'attributs étendus</value>
   </data>
   <data name="InheritedFromNone" xml:space="preserve">
-    <value />
+    <value>Aucun</value>
   </data>
   <data name="InheritedFromParent" xml:space="preserve">
-    <value />
+    <value>objet parent</value>
   </data>
   <data name="RegistryInheritance" xml:space="preserve">
-    <value />
+    <value>Cette clé seulement</value>
   </data>
   <data name="RegistryInheritanceCI" xml:space="preserve">
-    <value />
+    <value>Cette clé et les sous-clés</value>
   </data>
   <data name="RegistryInheritanceIOCI" xml:space="preserve">
-    <value />
+    <value>Les sous-clés seulement</value>
   </data>
   <data name="RegistryRightChangePermissions" xml:space="preserve">
-    <value />
+    <value>Écriture DAC</value>
   </data>
   <data name="RegistryRightCreateLink" xml:space="preserve">
-    <value />
+    <value>Créer un lien</value>
   </data>
   <data name="RegistryRightCreateSubKey" xml:space="preserve">
-    <value />
+    <value>Créer une sous-clé</value>
   </data>
   <data name="RegistryRightEnumerateSubKeys" xml:space="preserve">
-    <value />
+    <value>Énumérer les sous-clés</value>
   </data>
   <data name="RegistryRightNotify" xml:space="preserve">
-    <value />
+    <value>Notifier</value>
   </data>
   <data name="RegistryRightQueryValues" xml:space="preserve">
-    <value />
+    <value>Requête sur une valeur</value>
   </data>
   <data name="RegistryRightReadControl" xml:space="preserve">
-    <value />
+    <value>Contrôle en lecture</value>
   </data>
   <data name="RegistryRightSetValue" xml:space="preserve">
-    <value />
+    <value>Définir la valeur</value>
   </data>
   <data name="RegistryRightTakeOwnership" xml:space="preserve">
-    <value />
+    <value>Accès en écriture du propriétaire</value>
   </data>
   <data name="StdInheritance" xml:space="preserve">
-    <value />
+    <value>Cet objet</value>
   </data>
   <data name="StdInheritanceCI" xml:space="preserve">
-    <value />
+    <value>Cet objet et conteneurs</value>
   </data>
   <data name="StdInheritanceCIOI" xml:space="preserve">
-    <value />
+    <value>Cet objet, l'objet et conteneurs hérité</value>
   </data>
   <data name="StdInheritanceIOCI" xml:space="preserve">
-    <value />
+    <value>Conteneurs hérité</value>
   </data>
   <data name="StdInheritanceIOCIOI" xml:space="preserve">
-    <value />
+    <value>Héritée conteneurs/objets</value>
   </data>
   <data name="StdInheritanceIOOI" xml:space="preserve">
-    <value />
+    <value>Objets hérités</value>
   </data>
   <data name="StdInheritanceOI" xml:space="preserve">
-    <value />
+    <value>Cet objet et objets hérités</value>
   </data>
   <data name="StdRightDelete" xml:space="preserve">
-    <value />
+    <value>Supprimer</value>
   </data>
   <data name="StdRightSynchronize" xml:space="preserve">
-    <value />
+    <value>Synchroniser</value>
   </data>
   <data name="StdRightTakeOwnership" xml:space="preserve">
-    <value />
+    <value>Appropriation</value>
   </data>
   <data name="TaskRightExecute" xml:space="preserve">
-    <value />
+    <value>Exécuter</value>
   </data>
 </root>

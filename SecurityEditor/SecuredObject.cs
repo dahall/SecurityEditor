@@ -177,50 +177,48 @@ namespace Community.Security.AccessControl
 		{
 			try
 			{
-				System.Reflection.Assembly asm = System.Reflection.Assembly.LoadFrom("Microsoft.Win32.TaskScheduler.dll");
-				if (asm != null)
+				Type tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler.dll");
+				if (tsType == null)
+					tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler-Merged.dll");
+				if (tsType != null)
 				{
-					Type tsType = asm.GetType("Microsoft.Win32.TaskScheduler.TaskService", false, false);
-					if (tsType != null)
+					object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
+					if (ts != null)
 					{
-						object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
-						if (ts != null)
+						System.Reflection.MethodInfo mi = tsType.GetMethod("GetFolder", new Type[] { typeof(string) });
+						if (mi != null)
 						{
-							System.Reflection.MethodInfo mi = tsType.GetMethod("GetFolder", new Type[] { typeof(string) });
-							if (mi != null)
+							try
 							{
-								try
-								{
-									object r = mi.Invoke(ts, new object[] { objName });
-									if (r != null)
-										return r;
-								}
-								catch { }
+								object r = mi.Invoke(ts, new object[] { objName });
+								if (r != null)
+									return r;
 							}
+							catch { }
+						}
 
-							mi = tsType.GetMethod("GetTask", new Type[] { typeof(string) });
-							if (mi != null)
+						mi = tsType.GetMethod("GetTask", new Type[] { typeof(string) });
+						if (mi != null)
+						{
+							try
 							{
-								try
-								{
-									object r = mi.Invoke(ts, new object[] { objName });
-									if (r != null)
-										return r;
-								}
-								catch { }
+								object r = mi.Invoke(ts, new object[] { objName });
+								if (r != null)
+									return r;
 							}
+							catch { }
+						}
 
-							mi = tsType.GetMethod("FindTask", new Type[] { typeof(string), typeof(bool) });
-							if (mi != null)
+						mi = tsType.GetMethod("FindTask", new Type[] { typeof(string), typeof(bool) });
+						if (mi != null)
+						{
+							try
 							{
-								try
-								{
-									object r = mi.Invoke(ts, new object[] { objName, true });
-									if (r != null)
-										return r;
-								}
-								catch { }
+								object r = mi.Invoke(ts, new object[] { objName, true });
+								if (r != null)
+									return r;
 							}
+							catch { }
 						}
 					}
 				}

@@ -94,7 +94,7 @@ namespace SecurityEditorCSTester
 				var flags = GetFlags();
 
 				// Process dependencies
-				checkBoxList.ProcessFlagsOnCheckStateChanged(e.Item);
+				checkBoxList.ProcessFlagsOnCheckStateChanged<ObjInfoFlags>(e.Item);
 
 				if ((flags & ObjInfoFlags.NoTreeApply) != 0)
 					SetChecks(ObjInfoFlags.Advanced, true);
