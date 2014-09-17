@@ -22,33 +22,71 @@
 			return false;
 		}
 
-		public static T InvokeMethod<T>(Type type, string methodName, params object[] args)
+		public static T InvokeMethod<T>(this Type type, string methodName, params object[] args)
 		{
 			object o = Activator.CreateInstance(type);
 			return InvokeMethod<T>(o, methodName, args);
 		}
 
-		public static T InvokeMethod<T>(Type type, object[] instArgs, string methodName, params object[] args)
+		public static T InvokeMethod<T>(this Type type, object[] instArgs, string methodName, params object[] args)
 		{
 			object o = Activator.CreateInstance(type, instArgs);
 			return InvokeMethod<T>(o, methodName, args);
 		}
 
-		public static T InvokeMethod<T>(object obj, string methodName, params object[] args)
+		public static void InvokeMethod(this object obj, string methodName, params object[] args)
+		{
+			Type[] argTypes = (args == null || args.Length == 0) ? Type.EmptyTypes : Array.ConvertAll<object, Type>(args, delegate(object o) { return o == null ? typeof(object) : o.GetType(); });
+			InvokeMethod(obj, methodName, argTypes, args);
+		}
+
+		public static T InvokeMethod<T>(this object obj, string methodName, params object[] args)
 		{
 			Type[] argTypes = (args == null || args.Length == 0) ? Type.EmptyTypes : Array.ConvertAll<object, Type>(args, delegate(object o) { return o == null ? typeof(object) : o.GetType(); });
 			return InvokeMethod<T>(obj, methodName, argTypes, args);
 		}
 
-		public static T InvokeMethod<T>(object obj, string methodName, Type[] argTypes, object[] args)
+		public static void InvokeMethod(this object obj, string methodName, Type[] argTypes, object[] args)
+		{
+			if (obj != null)
+			{
+				MethodInfo mi = obj.GetType().GetMethod(methodName, argTypes);
+				if (mi != null && mi.ReturnType == typeof(void))
+					mi.Invoke(obj, args);
+			}
+		}
+
+		public static T InvokeMethod<T>(this object obj, string methodName, Type[] argTypes, object[] args)
 		{
 			if (obj != null)
 			{
 				MethodInfo mi = obj.GetType().GetMethod(methodName, argTypes);
 				if (mi != null)
-					return (T)Convert.ChangeType(mi.Invoke(obj, args), typeof(T));
+				{
+					Type tt = typeof(T);
+					if (tt == typeof(object) || mi.ReturnType == tt || mi.ReturnType.IsSubclassOf(tt))
+						return (T)mi.Invoke(obj, args);
+					if (mi.ReturnType.GetInterface("IConvertible") != null)
+						return (T)Convert.ChangeType(mi.Invoke(obj, args), tt);
+				}
 			}
 			return default(T);
+		}
+
+		public static T GetPropertyValue<T>(this object obj, string propertyName)
+		{
+			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, typeof(T), Type.EmptyTypes, null);
+			if (prop == null)
+				throw new ArgumentException();
+			return (T)prop.GetValue(obj, null);
+		}
+
+		public static object GetPropertyValue(this object obj, string propertyName)
+		{
+			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			if (prop == null)
+				throw new ArgumentException();
+			return prop.GetValue(obj, null);
 		}
 	}
 }

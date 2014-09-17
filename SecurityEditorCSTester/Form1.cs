@@ -20,12 +20,14 @@ namespace SecurityEditorCSTester
 			resTypeCombo.DataSource = res;
 			resTypeCombo.DisplayMember = "Key";
 			resTypeCombo.ValueMember = "Value";
-			resTypeCombo.SelectedIndex = 0;
 
 			pageTypeCombo.DataSource = GetEnumVals<SecurityPageType>();
 			pageTypeCombo.DisplayMember = "Key";
 			pageTypeCombo.ValueMember = "Value";
-			pageTypeCombo.SelectedIndex = 0;
+
+			pageActCombo.DataSource = GetEnumVals<SecurityPageActivation>();
+			pageActCombo.DisplayMember = "Key";
+			pageActCombo.ValueMember = "Value";
 
 			var oif = GetEnumVals<ObjInfoFlags>();
 			oif.RemoveAll(delegate(KeyValuePair<string, ObjInfoFlags> val) { return val.Value == 0; });
@@ -34,17 +36,11 @@ namespace SecurityEditorCSTester
 
 		void Default_SettingsLoaded(object sender, System.Configuration.SettingsLoadedEventArgs e)
 		{
-			SetFlags();
 		}
 
 		private ObjInfoFlags GetFlags()
 		{
 			return checkBoxList.GetFlagsValue<ObjInfoFlags>(0);
-		}
-
-		private void SetFlags()
-		{
-			checkBoxList.SetFlagsValue<ObjInfoFlags>((ObjInfoFlags)Properties.Settings.Default.dlgFlags);
 		}
 
 		public static GroupControls.CheckBoxListItem chliConvert(KeyValuePair<string, ObjInfoFlags> kvp)
@@ -96,6 +92,9 @@ namespace SecurityEditorCSTester
 				// Process dependencies
 				checkBoxList.ProcessFlagsOnCheckStateChanged<ObjInfoFlags>(e.Item);
 
+				if ((flags & ObjInfoFlags.Advanced) != 0 && ((SecurityPageType)this.pageTypeCombo.SelectedValue) == SecurityPageType.BasicPermissions)
+					SetChecks(ObjInfoFlags.ViewOnly, true);
+
 				if ((flags & ObjInfoFlags.NoTreeApply) != 0)
 					SetChecks(ObjInfoFlags.Advanced, true);
 
@@ -125,7 +124,12 @@ namespace SecurityEditorCSTester
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			Properties.Settings.Default.Reload();
+			resTypeCombo.SelectedValue = (System.Security.AccessControl.ResourceType)SecurityEditorCSTester.Properties.Settings.Default.resType;
+			pageTypeCombo.SelectedValue = (SecurityPageType)SecurityEditorCSTester.Properties.Settings.Default.pageType;
+			pageActCombo.SelectedValue = (SecurityPageActivation)SecurityEditorCSTester.Properties.Settings.Default.pageAct;
+			objNameText.Text = SecurityEditorCSTester.Properties.Settings.Default.objName;
+			dispNameText.Text = SecurityEditorCSTester.Properties.Settings.Default.dispName;
+			checkBoxList.SetFlagsValue<ObjInfoFlags>((ObjInfoFlags)(numericUpDown1.Value = SecurityEditorCSTester.Properties.Settings.Default.dlgFlags));
 		}
 
 		private void toolStripButton1_Click(object sender, EventArgs e)
@@ -134,6 +138,7 @@ namespace SecurityEditorCSTester
 			{
 				this.resTypeCombo.SelectedValue = System.Security.AccessControl.ResourceType.FileObject;
 				this.objNameText.Text = folderBrowserDialog1.SelectedPath;
+				SetChecks(ObjInfoFlags.Container, true);
 			}
 		}
 
@@ -143,6 +148,7 @@ namespace SecurityEditorCSTester
 			{
 				this.resTypeCombo.SelectedValue = System.Security.AccessControl.ResourceType.FileObject;
 				this.objNameText.Text = openFileDialog1.FileName;
+				SetChecks(ObjInfoFlags.Container, false);
 			}
 		}
 
@@ -153,12 +159,26 @@ namespace SecurityEditorCSTester
 
 		private void toolStripButton4_Click(object sender, EventArgs e)
 		{
-
+			using (var dlg = new Microsoft.Win32.TaskScheduler.TaskBrowserDialog() { AllowFolderSelection = true, ShowTasks = true })
+			{
+				if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{
+					this.resTypeCombo.SelectedValue = Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType;
+					this.objNameText.Text = dlg.SelectedPath;
+					SetChecks(ObjInfoFlags.Container, dlg.SelectedPathType.Name == "TaskFolder");
+				}
+			}
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Properties.Settings.Default.Save();
+			SecurityEditorCSTester.Properties.Settings.Default.resType = (int)(System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue;
+			SecurityEditorCSTester.Properties.Settings.Default.pageType = (int)(SecurityPageType)pageTypeCombo.SelectedValue;
+			SecurityEditorCSTester.Properties.Settings.Default.pageAct = (int)(SecurityPageActivation)pageActCombo.SelectedValue;
+			SecurityEditorCSTester.Properties.Settings.Default.dlgFlags = (decimal)GetFlags();
+			SecurityEditorCSTester.Properties.Settings.Default.objName = objNameText.Text;
+			SecurityEditorCSTester.Properties.Settings.Default.dispName = dispNameText.Text;
+			SecurityEditorCSTester.Properties.Settings.Default.Save();
 		}
 	}
 }

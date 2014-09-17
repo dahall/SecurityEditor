@@ -12,28 +12,7 @@ namespace Microsoft.Win32
 		public static extern bool EditSecurity(IntPtr hwnd, ISecurityInformation psi);
 
 		[DllImport("aclui.dll", PreserveSig = false)]
-		public static extern void EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, SecurityPageType pageType);
-
-		/// <summary>
-		/// Page types used by the new advanced ACL UI
-		/// </summary>
-		public enum SecurityPageActivation : uint
-		{
-			/// <summary></summary>
-			ShowDefault = 0,
-			/// <summary></summary>
-			ShowPermActivated,
-			/// <summary></summary>
-			ShowAuditActivated,
-			/// <summary></summary>
-			ShowOwnerActivated,
-			/// <summary></summary>
-			ShowEffectiveActivated,
-			/// <summary></summary>
-			ShowShareActivated,
-			/// <summary></summary>
-			ShowCentralPolicyActivated,
-		}
+		public static extern void EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, uint pageType);
 
 		[Flags]
 		internal enum GET_SECURITY_REQUEST_INFORMATION
@@ -78,6 +57,21 @@ namespace Microsoft.Win32
 			_In_opt_ PAUTHZ_SECURITY_ATTRIBUTE_OPERATION pAuthzDeviceClaimsOperations,
 			_Inout_updates_(dwSecurityObjectCount) PEFFPERM_RESULT_LIST pEffpermResultLists);
 			*/
+			void ComputeEffectivePermissionWithSecondarySecurity(
+				[In] IntPtr pSid,
+				[In, Optional] IntPtr pDeviceSid,
+				[In, Optional, MarshalAs(UnmanagedType.LPWStr)] string pszServerName,
+				[In, MarshalAs(UnmanagedType.LPArray)] SECURITY_OBJECT[] pSecurityObjects,
+				[In, Optional] uint dwSecurityObjectCount,
+				[In, Optional] ref TOKEN_GROUPS pUserGroups,
+				[In, Optional, MarshalAs(UnmanagedType.LPArray)] AuthzSidOperation[] pAuthzUserGroupsOperations,
+				[In, Optional] ref TOKEN_GROUPS pDeviceGroups,
+				[In, Optional, MarshalAs(UnmanagedType.LPArray)] AuthzSidOperation[] pAuthzDeviceGroupsOperations,
+				[In, Optional] ref AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzUserClaims,
+				[In, Optional] ref AuthzSecurityAttributeOperation pAuthzUserClaimsOperations,
+				[In, Optional] ref AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzDeviceClaims,
+				[In, Optional] ref AuthzSecurityAttributeOperation pAuthzDeviceClaimsOperations,
+				[In, Out, MarshalAs(UnmanagedType.LPArray)] EFFPERM_RESULT_LIST[] pEffpermResultLists);
 		}
 
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("965FC360-16FF-11d0-91CB-00AA00BBB723")]
@@ -116,13 +110,55 @@ namespace Microsoft.Win32
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA961070-CD14-4621-ACE4-F63C03E583E4")]
 		internal interface ISecurityInformation4
 		{
-			//STDMETHOD(GetSecondarySecurity) (THIS_ _Outptr_result_buffer_(*pSecurityObjectCount) PSECURITY_OBJECT *pSecurityObjects, _Out_ PULONG pSecurityObjectCount) PURE;
+			void GetSecondarySecurity([MarshalAs(UnmanagedType.LPArray)] out SECURITY_OBJECT[] securityObjects, out uint securityObjectCount);
 		}
 
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("FC3066EB-79EF-444b-9111-D18A75EBF2FA")]
 		internal interface ISecurityObjectTypeInfo
 		{
 			void GetInheritSource([In] int si, [In] IntPtr pACL, [MarshalAs(UnmanagedType.LPArray)] out InheritedFromInfo[] ppInheritArray);
+		}
+
+		internal enum SecurityObjectType : uint
+		{
+			ObjectSD = 1,
+			Share = 2,
+			CentralPolicy = 3,
+			CentralAccessRule = 4
+		}
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+		internal struct EFFPERM_RESULT_LIST
+		{
+			[MarshalAs(UnmanagedType.Bool)]
+			public bool fEvaluated;
+			public uint cObjectTypeListLength;
+			[MarshalAs(UnmanagedType.LPArray)]
+			public ObjectTypeList[] pObjectTypeList;
+			[MarshalAs(UnmanagedType.LPArray)]
+			public uint[] pGrantedAccessList;
+
+			public EFFPERM_RESULT_LIST(int resultLen = 0)
+			{
+				fEvaluated = resultLen > 0;
+				cObjectTypeListLength = (uint)resultLen;
+				pObjectTypeList = new ObjectTypeList[resultLen];
+				pGrantedAccessList = new uint[resultLen];
+			}
+		}
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+		internal struct SECURITY_OBJECT
+		{
+			[MarshalAs(UnmanagedType.LPWStr)]
+			public string pwszName;
+			public IntPtr pData;
+			public uint cbData;
+			public IntPtr pData2;
+			public uint cbData2;
+			public SecurityObjectType Id;
+			[MarshalAs(UnmanagedType.Bool)]
+			public bool fWellKnown;
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

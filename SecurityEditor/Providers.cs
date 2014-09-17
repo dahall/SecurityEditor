@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 
@@ -187,7 +188,7 @@ namespace Community.Security.AccessControl
 		virtual public InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
 			GenericMapping gMap = this.GetGenericMapping(0);
-			return NativeMethods.GetInheritanceSource(objName, this.ResourceType, (SecurityInfos)si, isContainer, pAcl, ref gMap);
+			return NativeMethods.GetInheritanceSource(objName, this.ResourceType, (SecurityInfosEx)si, isContainer, pAcl, ref gMap);
 		}
 
 		/// <summary>
@@ -426,11 +427,11 @@ namespace Community.Security.AccessControl
 
 			// Get list of all parents
 			var parents = new System.Collections.Generic.List<object>();
-			object folder = SecuredObject.GetProperty(obj, isContainer ? "Parent" : "Folder");
+			object folder = obj.GetPropertyValue(isContainer ? "Parent" : "Folder");
 			while (folder != null)
 			{
 				parents.Add(folder);
-				folder = SecuredObject.GetProperty(folder, "Parent");
+				folder = folder.GetPropertyValue("Parent");
 			}
 
 			// For each ACE, walk up list of lists of parents to determine if there's a matching one.

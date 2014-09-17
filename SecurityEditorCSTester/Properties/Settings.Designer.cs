@@ -82,5 +82,41 @@ namespace SecurityEditorCSTester.Properties {
                 this["dlgFlags"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int resType {
+            get {
+                return ((int)(this["resType"]));
+            }
+            set {
+                this["resType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int pageType {
+            get {
+                return ((int)(this["pageType"]));
+            }
+            set {
+                this["pageType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int pageAct {
+            get {
+                return ((int)(this["pageAct"]));
+            }
+            set {
+                this["pageAct"] = value;
+            }
+        }
     }
 }

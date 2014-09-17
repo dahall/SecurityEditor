@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Security.AccessControl;
 
 namespace Community.Security.AccessControl
@@ -34,54 +35,42 @@ namespace Community.Security.AccessControl
 				if (knownObject.GetType().FullName == "Microsoft.Win32.TaskScheduler.Task" || knownObject.GetType().FullName == "Microsoft.Win32.TaskScheduler.TaskFolder")
 				{
 					IsContainer = knownObject.GetType().Name == "TaskFolder";
-
-					var piTS = knownObject.GetType().GetProperty("TaskService", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-					if (piTS == null)
-						throw new ArgumentException("Invalid Task type.");
-					var piSv = piTS.PropertyType.GetProperty("TargetServer", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-					if (piSv == null)
-						throw new ArgumentException("Invalid Task type.");
-					TargetServer = (string)piSv.GetValue(piTS.GetValue(knownObject, null), null);
+					TargetServer = knownObject.GetPropertyValue("TaskService").GetPropertyValue<string>("TargetServer");
 				}
 
 				// Get the security object using the standard "GetAccessControl" method
-				System.Reflection.MethodInfo mi = null;
-				object[] methodParams = null;
-				mi = knownObject.GetType().GetMethod("GetAccessControl", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, System.Reflection.CallingConventions.Any, new Type[] { typeof(AccessControlSections) }, null);
-				if (mi != null)
-					methodParams = new object[] { AccessControlSections.All };
-				else
-					mi = knownObject.GetType().GetMethod("GetAccessControl", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, System.Reflection.CallingConventions.Any, Type.EmptyTypes, null);
-				if (mi != null)
+				try
 				{
-					try { ObjectSecurity = mi.Invoke(knownObject, methodParams) as CommonObjectSecurity; }
-					catch
-					{
-						if (methodParams != null)
-						{
-							methodParams = new object[] { AccessControlSections.Access | AccessControlSections.Group | AccessControlSections.Owner };
-							try { ObjectSecurity = mi.Invoke(knownObject, methodParams) as CommonObjectSecurity; }
-							catch { }
-						}
-					}
+					ObjectSecurity = knownObject.InvokeMethod<CommonObjectSecurity>("GetAccessControl", AccessControlSections.All);
 				}
-				else
+				catch (TargetInvocationException)
+				{
+					try { ObjectSecurity = knownObject.InvokeMethod<CommonObjectSecurity>("GetAccessControl", AccessControlSections.Access | AccessControlSections.Group | AccessControlSections.Owner); }
+					catch { }
+				}
+				catch { }
+				if (ObjectSecurity == null)
+				{
+					try { ObjectSecurity = knownObject.InvokeMethod<CommonObjectSecurity>("GetAccessControl"); }
+					catch { }
+				}
+				if (ObjectSecurity == null)
 					throw new ArgumentException("Object must have a GetAccessControl member.");
 
 				// Get the object names
 				switch (knownObject.GetType().Name)
 				{
 					case "RegistryKey":
-						ObjectName = GetProperty(knownObject, "Name");
+						ObjectName = knownObject.GetPropertyValue<string>("Name");
 						DisplayName = System.IO.Path.GetFileNameWithoutExtension(ObjectName);
 						break;
 					case "Task":
-						DisplayName = GetProperty(knownObject, "Name");
-						ObjectName = GetProperty(knownObject, "Path");
+						DisplayName = knownObject.GetPropertyValue<string>("Name");
+						ObjectName = knownObject.GetPropertyValue<string>("Path");
 						break;
 					default:
-						ObjectName = GetProperty(knownObject, "FullName");
-						DisplayName = GetProperty(knownObject, "Name");
+						ObjectName = knownObject.GetPropertyValue<string>("FullName");
+						DisplayName = knownObject.GetPropertyValue<string>("Name");
 						if (ObjectName == null) ObjectName = DisplayName;
 						break;
 				}
@@ -91,14 +80,6 @@ namespace Community.Security.AccessControl
 			}
 			this.IsContainer = SecuredObject.IsContainerObject(ObjectSecurity);
 			this.MandatoryLabel = new SystemMandatoryLabel(this.ObjectSecurity);
-		}
-
-		internal static string GetProperty(object knownObject, string propName)
-		{
-			var pi = knownObject.GetType().GetProperty(propName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-			if (pi != null)
-				return Convert.ToString(pi.GetValue(knownObject, null));
-			return null;
 		}
 
 		public enum SystemMandatoryLabelLevel
@@ -185,41 +166,29 @@ namespace Community.Security.AccessControl
 					object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
 					if (ts != null)
 					{
-						System.Reflection.MethodInfo mi = tsType.GetMethod("GetFolder", new Type[] { typeof(string) });
-						if (mi != null)
+						try
 						{
-							try
-							{
-								object r = mi.Invoke(ts, new object[] { objName });
-								if (r != null)
-									return r;
-							}
-							catch { }
+							object r = ts.InvokeMethod<object>("GetFolder", objName);
+							if (r != null)
+								return r;
 						}
+						catch { }
 
-						mi = tsType.GetMethod("GetTask", new Type[] { typeof(string) });
-						if (mi != null)
+						try
 						{
-							try
-							{
-								object r = mi.Invoke(ts, new object[] { objName });
-								if (r != null)
-									return r;
-							}
-							catch { }
+							object r = ts.InvokeMethod<object>("GetTask", objName);
+							if (r != null)
+								return r;
 						}
+						catch { }
 
-						mi = tsType.GetMethod("FindTask", new Type[] { typeof(string), typeof(bool) });
-						if (mi != null)
+						try
 						{
-							try
-							{
-								object r = mi.Invoke(ts, new object[] { objName, true });
-								if (r != null)
-									return r;
-							}
-							catch { }
+							object r = ts.InvokeMethod<object>("FindTask", objName, true);
+							if (r != null)
+								return r;
 						}
+						catch { }
 					}
 				}
 			}

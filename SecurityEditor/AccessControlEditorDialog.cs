@@ -288,7 +288,7 @@ namespace Community.Windows.Forms
 		public bool ShowAdvancedButton
 		{
 			get { return this.HasFlag(ObjInfoFlags.Advanced); }
-			set { this.SetFlag(ObjInfoFlags.Advanced, value); }
+			set { this.SetFlag(ObjInfoFlags.Advanced, value); if (value && this.PageType == SecurityPageType.BasicPermissions) this.SetFlag(ObjInfoFlags.ViewOnly, value); }
 		}
 
 		/// <summary>When set, this flag displays the Reset Defaults button on the Auditing page.</summary>

@@ -28,8 +28,8 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			SecurityEditorCSTester.Properties.Settings settings1 = new SecurityEditorCSTester.Properties.Settings();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-			this.accessControlEditorDialog1 = new Community.Windows.Forms.AccessControlEditorDialog();
 			this.closeBtn = new System.Windows.Forms.Button();
 			this.launchBtn = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
@@ -44,7 +44,6 @@
 			this.dispNameText = new System.Windows.Forms.TextBox();
 			this.svrNameText = new System.Windows.Forms.TextBox();
 			this.objNameText = new System.Windows.Forms.TextBox();
-			this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
@@ -52,22 +51,15 @@
 			this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.pageActCombo = new System.Windows.Forms.ComboBox();
+			this.toolStripContainer2 = new System.Windows.Forms.ToolStripContainer();
+			this.accessControlEditorDialog1 = new Community.Windows.Forms.AccessControlEditorDialog();
 			this.checkBoxList.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-			this.toolStripContainer1.ContentPanel.SuspendLayout();
-			this.toolStripContainer1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
+			this.toolStripContainer2.ContentPanel.SuspendLayout();
+			this.toolStripContainer2.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// accessControlEditorDialog1
-			// 
-			this.accessControlEditorDialog1.DisplayName = null;
-			this.accessControlEditorDialog1.Flags = ((Community.Security.AccessControl.ObjInfoFlags)(((((((Community.Security.AccessControl.ObjInfoFlags.EditOwner | Community.Security.AccessControl.ObjInfoFlags.EditAudit) 
-            | Community.Security.AccessControl.ObjInfoFlags.Advanced) 
-            | Community.Security.AccessControl.ObjInfoFlags.Reset) 
-            | Community.Security.AccessControl.ObjInfoFlags.EditProperties) 
-            | Community.Security.AccessControl.ObjInfoFlags.EditEffective) 
-            | Community.Security.AccessControl.ObjInfoFlags.ResetSacl)));
 			// 
 			// closeBtn
 			// 
@@ -123,15 +115,15 @@
 			// 
 			this.resTypeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.resTypeCombo.FormattingEnabled = true;
-			this.resTypeCombo.Location = new System.Drawing.Point(411, 12);
+			this.resTypeCombo.Location = new System.Drawing.Point(394, 11);
 			this.resTypeCombo.Name = "resTypeCombo";
-			this.resTypeCombo.Size = new System.Drawing.Size(203, 21);
+			this.resTypeCombo.Size = new System.Drawing.Size(220, 21);
 			this.resTypeCombo.TabIndex = 3;
 			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(326, 15);
+			this.label4.Location = new System.Drawing.Point(309, 14);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(79, 13);
 			this.label4.TabIndex = 2;
@@ -140,7 +132,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(326, 42);
+			this.label5.Location = new System.Drawing.Point(309, 41);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(58, 13);
 			this.label5.TabIndex = 2;
@@ -150,9 +142,9 @@
 			// 
 			this.pageTypeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.pageTypeCombo.FormattingEnabled = true;
-			this.pageTypeCombo.Location = new System.Drawing.Point(411, 39);
+			this.pageTypeCombo.Location = new System.Drawing.Point(394, 38);
 			this.pageTypeCombo.Name = "pageTypeCombo";
-			this.pageTypeCombo.Size = new System.Drawing.Size(203, 21);
+			this.pageTypeCombo.Size = new System.Drawing.Size(111, 21);
 			this.pageTypeCombo.TabIndex = 3;
 			// 
 			// checkBoxList
@@ -172,7 +164,20 @@
 			// 
 			// numericUpDown1
 			// 
-			this.numericUpDown1.DataBindings.Add(new System.Windows.Forms.Binding("Value", global::SecurityEditorCSTester.Properties.Settings.Default, "dlgFlags", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+			settings1.dispName = "";
+			settings1.dlgFlags = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+			settings1.flags = 0;
+			settings1.objName = "";
+			settings1.pageAct = 0;
+			settings1.pageType = 0;
+			settings1.resType = 0;
+			settings1.SettingsKey = "";
+			settings1.svrName = "";
+			this.numericUpDown1.DataBindings.Add(new System.Windows.Forms.Binding("Value", settings1, "dlgFlags", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
 			this.numericUpDown1.Hexadecimal = true;
 			this.numericUpDown1.Location = new System.Drawing.Point(15, 269);
 			this.numericUpDown1.Maximum = new decimal(new int[] {
@@ -184,54 +189,37 @@
 			this.numericUpDown1.ReadOnly = true;
 			this.numericUpDown1.Size = new System.Drawing.Size(70, 20);
 			this.numericUpDown1.TabIndex = 5;
-			this.numericUpDown1.Value = global::SecurityEditorCSTester.Properties.Settings.Default.dlgFlags;
+			this.numericUpDown1.Value = settings1.dlgFlags;
 			// 
 			// dispNameText
 			// 
-			this.dispNameText.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SecurityEditorCSTester.Properties.Settings.Default, "dispName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+			this.dispNameText.DataBindings.Add(new System.Windows.Forms.Binding("Text", settings1, "dispName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
 			this.dispNameText.Location = new System.Drawing.Point(95, 64);
 			this.dispNameText.Name = "dispNameText";
 			this.dispNameText.Size = new System.Drawing.Size(203, 20);
 			this.dispNameText.TabIndex = 1;
-			this.dispNameText.Text = global::SecurityEditorCSTester.Properties.Settings.Default.dispName;
+			this.dispNameText.Text = settings1.dispName;
 			// 
 			// svrNameText
 			// 
-			this.svrNameText.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SecurityEditorCSTester.Properties.Settings.Default, "svrName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+			this.svrNameText.DataBindings.Add(new System.Windows.Forms.Binding("Text", settings1, "svrName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
 			this.svrNameText.Location = new System.Drawing.Point(95, 38);
 			this.svrNameText.Name = "svrNameText";
 			this.svrNameText.Size = new System.Drawing.Size(203, 20);
 			this.svrNameText.TabIndex = 1;
-			this.svrNameText.Text = global::SecurityEditorCSTester.Properties.Settings.Default.svrName;
+			this.svrNameText.Text = settings1.svrName;
 			// 
 			// objNameText
 			// 
-			this.objNameText.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SecurityEditorCSTester.Properties.Settings.Default, "objName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+			this.objNameText.DataBindings.Add(new System.Windows.Forms.Binding("Text", settings1, "objName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
 			this.objNameText.Location = new System.Drawing.Point(95, 12);
 			this.objNameText.Name = "objNameText";
 			this.objNameText.Size = new System.Drawing.Size(203, 20);
 			this.objNameText.TabIndex = 1;
-			this.objNameText.Text = global::SecurityEditorCSTester.Properties.Settings.Default.objName;
-			// 
-			// toolStripContainer1
-			// 
-			this.toolStripContainer1.BottomToolStripPanelVisible = false;
-			// 
-			// toolStripContainer1.ContentPanel
-			// 
-			this.toolStripContainer1.ContentPanel.Controls.Add(this.toolStrip1);
-			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(203, 0);
-			this.toolStripContainer1.LeftToolStripPanelVisible = false;
-			this.toolStripContainer1.Location = new System.Drawing.Point(411, 64);
-			this.toolStripContainer1.Name = "toolStripContainer1";
-			this.toolStripContainer1.RightToolStripPanelVisible = false;
-			this.toolStripContainer1.Size = new System.Drawing.Size(203, 22);
-			this.toolStripContainer1.TabIndex = 6;
-			this.toolStripContainer1.Text = "toolStripContainer1";
+			this.objNameText.Text = settings1.objName;
 			// 
 			// toolStrip1
 			// 
-			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
@@ -240,7 +228,8 @@
             this.toolStripButton4});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(203, 0);
+			this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+			this.toolStrip1.Size = new System.Drawing.Size(152, 25);
 			this.toolStrip1.TabIndex = 0;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -250,7 +239,7 @@
 			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
 			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(23, 0);
+			this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButton1.Text = "folder";
 			this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
 			// 
@@ -260,7 +249,7 @@
 			this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
 			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton2.Name = "toolStripButton2";
-			this.toolStripButton2.Size = new System.Drawing.Size(23, 0);
+			this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButton2.Text = "file";
 			this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
 			// 
@@ -270,7 +259,7 @@
 			this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
 			this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton3.Name = "toolStripButton3";
-			this.toolStripButton3.Size = new System.Drawing.Size(23, 0);
+			this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButton3.Text = "registry";
 			this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
 			// 
@@ -280,13 +269,45 @@
 			this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
 			this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton4.Name = "toolStripButton4";
-			this.toolStripButton4.Size = new System.Drawing.Size(23, 0);
+			this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButton4.Text = "task";
 			this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
 			// 
 			// openFileDialog1
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
+			// pageActCombo
+			// 
+			this.pageActCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.pageActCombo.FormattingEnabled = true;
+			this.pageActCombo.Location = new System.Drawing.Point(511, 38);
+			this.pageActCombo.Name = "pageActCombo";
+			this.pageActCombo.Size = new System.Drawing.Size(103, 21);
+			this.pageActCombo.TabIndex = 3;
+			// 
+			// toolStripContainer2
+			// 
+			// 
+			// toolStripContainer2.ContentPanel
+			// 
+			this.toolStripContainer2.ContentPanel.Controls.Add(this.toolStrip1);
+			this.toolStripContainer2.ContentPanel.Size = new System.Drawing.Size(152, 0);
+			this.toolStripContainer2.Location = new System.Drawing.Point(394, 65);
+			this.toolStripContainer2.Name = "toolStripContainer2";
+			this.toolStripContainer2.Size = new System.Drawing.Size(152, 24);
+			this.toolStripContainer2.TabIndex = 7;
+			this.toolStripContainer2.Text = "toolStripContainer2";
+			// 
+			// accessControlEditorDialog1
+			// 
+			this.accessControlEditorDialog1.DisplayName = null;
+			this.accessControlEditorDialog1.Flags = ((Community.Security.AccessControl.ObjInfoFlags)(((((((Community.Security.AccessControl.ObjInfoFlags.EditOwner | Community.Security.AccessControl.ObjInfoFlags.EditAudit) 
+            | Community.Security.AccessControl.ObjInfoFlags.Advanced) 
+            | Community.Security.AccessControl.ObjInfoFlags.Reset) 
+            | Community.Security.AccessControl.ObjInfoFlags.EditProperties) 
+            | Community.Security.AccessControl.ObjInfoFlags.EditEffective) 
+            | Community.Security.AccessControl.ObjInfoFlags.ResetSacl)));
 			// 
 			// Form1
 			// 
@@ -295,9 +316,10 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.closeBtn;
 			this.ClientSize = new System.Drawing.Size(626, 301);
-			this.Controls.Add(this.toolStripContainer1);
+			this.Controls.Add(this.toolStripContainer2);
 			this.Controls.Add(this.numericUpDown1);
 			this.Controls.Add(this.checkBoxList);
+			this.Controls.Add(this.pageActCombo);
 			this.Controls.Add(this.pageTypeCombo);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.resTypeCombo);
@@ -317,12 +339,12 @@
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.checkBoxList.ResumeLayout(true);
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-			this.toolStripContainer1.ContentPanel.ResumeLayout(false);
-			this.toolStripContainer1.ContentPanel.PerformLayout();
-			this.toolStripContainer1.ResumeLayout(false);
-			this.toolStripContainer1.PerformLayout();
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
+			this.toolStripContainer2.ContentPanel.ResumeLayout(false);
+			this.toolStripContainer2.ContentPanel.PerformLayout();
+			this.toolStripContainer2.ResumeLayout(false);
+			this.toolStripContainer2.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -345,7 +367,6 @@
 		private System.Windows.Forms.ComboBox pageTypeCombo;
 		private GroupControls.CheckBoxList checkBoxList;
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
-		private System.Windows.Forms.ToolStripContainer toolStripContainer1;
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
@@ -353,5 +374,7 @@
 		private System.Windows.Forms.ToolStripButton toolStripButton4;
 		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
+		private System.Windows.Forms.ComboBox pageActCombo;
+		private System.Windows.Forms.ToolStripContainer toolStripContainer2;
 	}
 }

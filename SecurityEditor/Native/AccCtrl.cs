@@ -55,7 +55,7 @@ namespace Microsoft.Win32
 		public static extern void GetEffectiveRightsFromAcl(IntPtr pacl, ref TRUSTEE pTrustee, ref uint pAccessRights);
 
 		[DllImport("advapi32.dll", CharSet = CharSet.Auto, PreserveSig = true)]
-		public static extern int GetInheritanceSource([MarshalAs(UnmanagedType.LPWStr)] string objectName, ResourceType objectType, SecurityInfos securityInfo,
+		public static extern int GetInheritanceSource([MarshalAs(UnmanagedType.LPWStr)] string objectName, ResourceType objectType, Community.Security.AccessControl.SecurityInfosEx securityInfo,
 			[MarshalAs(UnmanagedType.Bool)] bool container, IntPtr pObjectClassGuids, uint guidCount, IntPtr pAcl, IntPtr pfnArray, ref Community.Security.AccessControl.GenericMapping pGenericMapping,
 			IntPtr pInheritArray);
 

@@ -52,7 +52,7 @@ namespace Microsoft.Win32
 		}
 
 		public static InheritedFromInfo[] GetInheritanceSource(string objectName, ResourceType objectType,
-			SecurityInfos securityInfo, bool container, IntPtr pAcl, ref GenericMapping pGenericMapping)
+			SecurityInfosEx securityInfo, bool container, IntPtr pAcl, ref GenericMapping pGenericMapping)
 		{
 			int objSize = Marshal.SizeOf(typeof(InheritedFromInfo));
 			var aceCount = GetAceCount(pAcl);

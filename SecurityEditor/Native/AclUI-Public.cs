@@ -179,6 +179,59 @@ namespace Community.Security.AccessControl
 	}
 
 	/// <summary>
+	/// Identifies the object-related security information being set or queried.
+	/// </summary>
+	[Flags]
+	public enum SecurityInfosEx : uint
+	{
+		/// <summary>The owner identifier of the object is being referenced.</summary>
+		Owner = 1,
+		/// <summary>The primary group identifier of the object is being referenced.</summary>
+		Group = 2,
+		/// <summary>The DACL of the object is being referenced.</summary>
+		DiscretionaryAcl = 4,
+		/// <summary>The SACL of the object is being referenced.</summary>
+		SystemAcl = 8,
+		/// <summary>The mandatory integrity label is being referenced.</summary>
+		MandatoryIntegrityLabel = 0x10,
+		/// <summary>A SYSTEM_RESOURCE_ATTRIBUTE_ACE is being referenced.</summary>
+		ResourceAttribute = 0x20,
+		/// <summary>A SYSTEM_SCOPED_POLICY_ID_ACE is being referenced.</summary>
+		ScopedPolicyID = 0x40,
+		/// <summary>The security descriptor is being accessed for use in a backup operation.</summary>
+		Backup = 0x10000,
+		/// <summary>The SACL inherits access control entries (ACEs) from the parent object.</summary>
+		UnprotectedSystemAcl = 0x10000000,
+		/// <summary>The DACL inherits ACEs from the parent object.</summary>
+		UnprotectedDiscretionaryAcl = 0x20000000,
+		/// <summary>The SACL cannot inherit ACEs.</summary>
+		ProtectedSystemAcl = 0x40000000,
+		/// <summary>The DACL cannot inherit ACEs.</summary>
+		ProtectedDiscretionaryAcl = 0x80000000,
+	}
+
+	/// <summary>
+	/// Page types used by the new advanced ACL UI
+	/// </summary>
+	public enum SecurityPageActivation : uint
+	{
+		/// <summary></summary>
+		ShowDefault = 0,
+		/// <summary></summary>
+		ShowPermActivated,
+		/// <summary></summary>
+		ShowAuditActivated,
+		/// <summary></summary>
+		ShowOwnerActivated,
+		/// <summary></summary>
+		ShowEffectiveActivated,
+		/// <summary></summary>
+		ShowShareActivated,
+		/// <summary></summary>
+		ShowCentralPolicyActivated,
+	}
+
+	/// <summary>
 	/// Values that indicate the types of property pages in an access control editor property sheet.
 	/// </summary>
 	public enum SecurityPageType : uint
@@ -330,6 +383,13 @@ namespace Community.Security.AccessControl
 		/// </returns>
 		public override string ToString()
 		{
+			if (AncestorName == null)
+			{
+				if (GenerationGap == 0)
+					return "Explicit";
+				if (GenerationGap == -1)
+					return "Indeterminate";
+			}
 			return string.Format("{0} : 0x{1:X}", AncestorName, GenerationGap);
 		}
 
