@@ -198,8 +198,9 @@ namespace Community.Security.AccessControl
 			this.Revert();
 		}
 
-		/// <summary>Disposes of an instance of the PrivilegedCodeBlock class.</summary>
-		/// <exception cref="Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+		/// <summary>
+		/// Disposes of an instance of the PrivilegedCodeBlock class.
+		/// </summary>
 		/// <permission cref="SecurityAction.Demand">Requires the call stack to have FullTrust.</permission>
 		[PermissionSetAttribute(SecurityAction.Demand, Name = "FullTrust")]
 		public void Dispose()

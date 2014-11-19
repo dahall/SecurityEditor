@@ -20,19 +20,29 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\$(Configuration)\$(TargetFrameworkVersion)</OutputPath>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\$(Configuration)\$(TargetFrameworkVersion)</OutputPath>
+    <DefineConstants>TRACE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\SecurityEditor.XML</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFrameworkVersion)\SecurityEditor.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Adding a custom constant will auto-magically append a comma and space to the pre-built constants.    -->
+    <!-- Move the comma delimiter to the end of each constant and remove the trailing comma when we're done.  -->
+    <DefineConstants Condition=" !$(DefineConstants.Contains(', NET')) ">$(DefineConstants)$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", "")), </DefineConstants>
+    <DefineConstants Condition=" $(DefineConstants.Contains(', NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(", NET"))))$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", "")), </DefineConstants>
+    <!-- <DefineConstants Condition=" $(TargetFrameworkVersion.Replace('v', '')) &gt;= 2.0 ">$(DefineConstants)NET_20_OR_GREATER, </DefineConstants>
+    <DefineConstants Condition=" $(TargetFrameworkVersion.Replace('v', '')) &gt;= 3.5 ">$(DefineConstants)NET_35_OR_GREATER, </DefineConstants>
+    <DefineConstants Condition=" $(TargetFrameworkVersion.Replace('v', '')) &gt;= 4.0 ">$(DefineConstants)NET_40_OR_GREATER</DefineConstants> -->
+    <DefineConstants Condition=" $(DefineConstants.EndsWith(', ')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(", "))))</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -78,6 +88,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <MSBuild Condition=" $(TargetFrameworkVersion.Replace(&quot;v&quot;,&quot;&quot;)) == 2.0 " Projects="$(MSBuildProjectFile)" Properties="TargetFrameworkVersion=v4.0" RunEachTargetSeparately="true" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

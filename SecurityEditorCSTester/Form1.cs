@@ -154,7 +154,15 @@ namespace SecurityEditorCSTester
 
 		private void toolStripButton3_Click(object sender, EventArgs e)
 		{
-
+			using (var dlg = new RegKeySelectionDlg())
+			{
+				if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{
+					this.resTypeCombo.SelectedValue = System.Security.AccessControl.ResourceType.RegistryKey;
+					this.objNameText.Text = dlg.Key.Name;
+					SetChecks(ObjInfoFlags.Container, true);
+				}
+			}
 		}
 
 		private void toolStripButton4_Click(object sender, EventArgs e)
