@@ -9,7 +9,11 @@ namespace Community.Windows.Forms
 	/// <summary>
 	/// Displays a property sheet that contains a basic security property page. This property page enables the user to view and edit the access rights allowed or denied by the ACEs in an object's DACL.
 	/// </summary>
+	[ToolboxItem(true), ToolboxItemFilter("System.Windows.Forms.Control.TopLevel")]
+	[Designer("System.ComponentModel.Design.ComponentDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+	[DesignTimeVisible(true)]
 	[DefaultProperty("ObjectName"), Description("Displays a property sheet that contains a basic security property page.")]
+	[System.Drawing.ToolboxBitmap(typeof(AccessControlEditorDialog))]
 	public class AccessControlEditorDialog : CommonDialog
 	{
 		/// <summary>Psuedo type cast for a Task specific ResourceType.</summary>

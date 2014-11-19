@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+	<id>SecurityEditor</id>
+	<version>1.0.1</version>
+	<title>Task Scheduler Managed Wrapper</title>
+	<authors>David Hall</authors>
+	<description>Standard Windows security editor dialog for .NET derived from CommonDialog and implementing the Windows EditSecurity API.</description>
+	<language>en-US</language>
+	<licenseUrl>http://securityeditor.codeplex.com/license</licenseUrl>
+	<projectUrl>http://securityeditor.codeplex.com/</projectUrl>
+	<iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=securityeditor&DownloadId=937747&Build=20941</iconUrl>    
+	<tags>editsecurity interop security editor ACL</tags>
+  </metadata>
+  <files>
+	<file src="bin\Release\v2.0\*.dll" target="lib\2" />
+	<file src="bin\Release\v2.0\*.xml" target="lib\2" />
+	<file src="bin\Release\v2.0\**\SecurityEditor.resources.dll" target="lib\2" />
+	<file src="bin\Release\v4.0\*.dll" target="lib\4" />
+	<file src="bin\Release\v4.0\*.xml" target="lib\4" />
+	<file src="bin\Release\v4.0\**\SecurityEditor.resources.dll" target="lib\4" />
+  </files>
+</package>
