@@ -487,7 +487,9 @@ namespace Community.Windows.Forms
 			var ret = iSecInfo.ShowDialog(hWndOwner, this.PageType);
 			if (ret != null)
 			{
+#if DEBUG
 				MessageBox.Show(ret.GetSddlForm(System.Security.AccessControl.AccessControlSections.All));
+#endif
 				this.Result = ret;
 			}
 			return ret != null;
