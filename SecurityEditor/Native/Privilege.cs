@@ -118,9 +118,7 @@ namespace Community.Security.AccessControl
 		UnsolicitedInput
 	}
 
-	/// <summary>
-	/// Manage user privileges
-	/// </summary>
+	/// <summary>Manage user privileges</summary>
 	internal sealed class PrivilegedCodeBlock : IDisposable
 	{
 		private static readonly Dictionary<Privilege, NativeMethods.LUID> luidLookup =
@@ -171,9 +169,7 @@ namespace Community.Security.AccessControl
 		private Stack<NativeMethods.TOKEN_PRIVILEGES> prevPrivs = new Stack<NativeMethods.TOKEN_PRIVILEGES>();
 		private NativeMethods.SafeTokenHandle token;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PrivilegedCodeBlock"/> class.
-		/// </summary>
+		/// <summary>Initializes a new instance of the <see cref="PrivilegedCodeBlock"/> class.</summary>
 		/// <param name="privileges">The privileges.</param>
 		[PermissionSetAttribute(SecurityAction.LinkDemand, Name = "FullTrust")]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail), SecurityCritical]
@@ -198,9 +194,7 @@ namespace Community.Security.AccessControl
 			this.Revert();
 		}
 
-		/// <summary>
-		/// Disposes of an instance of the PrivilegedCodeBlock class.
-		/// </summary>
+		/// <summary>Disposes of an instance of the PrivilegedCodeBlock class.</summary>
 		/// <permission cref="SecurityAction.Demand">Requires the call stack to have FullTrust.</permission>
 		[PermissionSetAttribute(SecurityAction.Demand, Name = "FullTrust")]
 		public void Dispose()
@@ -240,9 +234,7 @@ namespace Community.Security.AccessControl
 				prevPrivs.Push(prevState);
 		}
 
-		/// <summary>
-		/// Revert back to prior privileges.
-		/// </summary>
+		/// <summary>Revert back to prior privileges.</summary>
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail), SecurityCritical]
 		private void Revert()
 		{

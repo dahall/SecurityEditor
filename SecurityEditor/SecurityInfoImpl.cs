@@ -60,12 +60,6 @@ namespace Community.Security.AccessControl
 			}
 		}
 
-		/*void NativeMethods.IEffectivePermission2.ComputeEffectivePermissionWithSecondarySecurity(IntPtr pSid, IntPtr pDeviceSid, string pszServerName, NativeMethods.SECURITY_OBJECT[] pSecurityObjects, uint dwSecurityObjectCount, ref NativeMethods.TOKEN_GROUPS pUserGroups, NativeMethods.AuthzSidOperation[] pAuthzUserGroupsOperations, ref NativeMethods.TOKEN_GROUPS pDeviceGroups, NativeMethods.AuthzSidOperation[] pAuthzDeviceGroupsOperations, ref NativeMethods.AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzUserClaims, ref NativeMethods.AuthzSecurityAttributeOperation pAuthzUserClaimsOperations, ref NativeMethods.AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzDeviceClaims, ref NativeMethods.AuthzSecurityAttributeOperation pAuthzDeviceClaimsOperations, ref NativeMethods.EFFPERM_RESULT_LIST pEffpermResultLists)
-		{
-			System.Diagnostics.Debug.WriteLine(string.Format("ComputeEffectivePermissionWithSecondarySecurity: {0}", dwSecurityObjectCount));
-			pEffpermResultLists = new NativeMethods.EFFPERM_RESULT_LIST();
-		}*/
-
 		void NativeMethods.ISecurityInformation.GetAccessRights(Guid guidObject, int dwFlags, out AccessRightInfo[] access, ref uint access_count, out uint DefaultAccess)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("GetAccessRight: {0}, {1}", guidObject, (ObjInfoFlags)dwFlags));
@@ -136,24 +130,31 @@ namespace Community.Security.AccessControl
 				case SecurityPageActivation.ShowDefault:
 					this.currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
 					break;
+
 				case SecurityPageActivation.ShowPermActivated:
 					this.currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
 					pgType = SecurityPageType.AdvancedPermissions;
 					break;
+
 				case SecurityPageActivation.ShowAuditActivated:
 					this.currentElevation |= ObjInfoFlags.AuditElevationRequired;
 					pgType = SecurityPageType.Audit;
 					break;
+
 				case SecurityPageActivation.ShowOwnerActivated:
 					this.currentElevation |= ObjInfoFlags.OwnerElevationRequired;
 					pgType = SecurityPageType.Owner;
 					break;
+
 				case SecurityPageActivation.ShowEffectiveActivated:
 					break;
+
 				case SecurityPageActivation.ShowShareActivated:
 					break;
+
 				case SecurityPageActivation.ShowCentralPolicyActivated:
 					break;
+
 				default:
 					break;
 			}
@@ -183,7 +184,7 @@ namespace Community.Security.AccessControl
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("ShowDialog: {0} {1}", pageType, pageAct));
 			SecurityEventArg sd = null;
-			SecurityEvent fn = delegate(SecurityEventArg e) { sd = e; };
+			SecurityEvent fn = delegate (SecurityEventArg e) { sd = e; };
 			try
 			{
 				this.OnSetSecurity += fn;

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 
 namespace Community.Security.AccessControl
@@ -11,30 +10,32 @@ namespace Community.Security.AccessControl
 	/// </summary>
 	public interface IAccessControlEditorDialogProvider
 	{
-		/// <summary>
-		/// Gets the type of the resource.
-		/// </summary>
-		/// <value>
-		/// The type of the resource.
-		/// </value>
+		/// <summary>Gets the type of the resource.</summary>
+		/// <value>The type of the resource.</value>
 		ResourceType ResourceType { get; }
 
 		/// <summary>
-		/// Gets an array of <see cref="AccessRightInfo" /> structures which define how to display differnt access rights supplied to the editor along with the index of the access right that should be applied to new ACEs.
+		/// Gets an array of <see cref="AccessRightInfo"/> structures which define how to display
+		/// different access rights supplied to the editor along with the index of the access right
+		/// that should be applied to new ACEs.
 		/// </summary>
-		/// <param name="flags">A set of bit flags that indicate the property page being initialized. This value is zero if the basic security page is being initialized.</param>
+		/// <param name="flags">
+		/// A set of bit flags that indicate the property page being initialized. This value is zero
+		/// if the basic security page is being initialized.
+		/// </param>
 		/// <param name="rights">The access right information for each right.</param>
-		/// <param name="defaultIndex">The default index in the <paramref name="rights" /> array for new ACEs.</param>
+		/// <param name="defaultIndex">
+		/// The default index in the <paramref name="rights"/> array for new ACEs.
+		/// </param>
 		void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex);
 
-		/// <summary>
-		/// Gets a default Security Descriptor for resetting the security of the object.
-		/// </summary>
+		/// <summary>Gets a default Security Descriptor for resetting the security of the object.</summary>
 		/// <returns>Pointer to a Security Descriptor.</returns>
 		IntPtr GetDefaultSecurity();
 
 		/// <summary>
-		/// Gets the effective permissions for the provided Sid within the Security Descriptor. Called only when no object type identifier is specified.
+		/// Gets the effective permissions for the provided Sid within the Security Descriptor.
+		/// Called only when no object type identifier is specified.
 		/// </summary>
 		/// <param name="pUserSid">A pointer to the Sid of the identity to check.</param>
 		/// <param name="serverName">Name of the server. This can be <c>null</c>.</param>
@@ -43,7 +44,8 @@ namespace Community.Security.AccessControl
 		uint[] GetEffectivePermission(IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor);
 
 		/// <summary>
-		/// Gets the effective permissions for the provided Sid within the Security Descriptor. Called only when an object type identifier is specified.
+		/// Gets the effective permissions for the provided Sid within the Security Descriptor.
+		/// Called only when an object type identifier is specified.
 		/// </summary>
 		/// <param name="objTypeId">The object type identifier.</param>
 		/// <param name="pUserSid">A pointer to the Sid of the identity to check.</param>
@@ -53,62 +55,65 @@ namespace Community.Security.AccessControl
 		/// <returns>An array of access masks.</returns>
 		uint[] GetEffectivePermission(Guid objTypeId, IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor, out ObjectTypeList[] objectTypeList);
 
-		/// <summary>
-		/// Gets the generic mapping for standard rights.
-		/// </summary>
+		/// <summary>Gets the generic mapping for standard rights.</summary>
 		/// <param name="AceFlags">The ace flags.</param>
-		/// <returns>
-		/// A <see cref="GenericMapping" /> structure fror this object type.
-		/// </returns>
+		/// <returns>A <see cref="GenericMapping"/> structure for this object type.</returns>
 		GenericMapping GetGenericMapping(sbyte AceFlags);
 
 		/// <summary>
-		/// Determines the source of inherited access control entries (ACEs) in discretionary access control lists (DACLs) and system access control lists (SACLs).
+		/// Determines the source of inherited access control entries (ACEs) in discretionary access
+		/// control lists (DACLs) and system access control lists (SACLs).
 		/// </summary>
 		/// <param name="objName">Name of the object.</param>
 		/// <param name="serverName">Name of the server.</param>
 		/// <param name="isContainer">If set to <c>true</c> object is a container.</param>
-		/// <param name="si">The object-related security information being queried. See SECURITY_INFORMATION type in Windows documentation.</param>
-		/// <param name="pAcl">A pointer to the Acl.</param>
+		/// <param name="si">
+		/// The object-related security information being queried. See SECURITY_INFORMATION type in
+		/// Windows documentation.
+		/// </param>
+		/// <param name="pAcl">A pointer to the ACL.</param>
 		/// <returns>
-		/// An array of <see cref="InheritedFromInfo" /> structures. The length of this array is the same as the number of ACEs in the ACL referenced by pACL. Each <see cref="InheritedFromInfo" /> entry provides inheritance information for the corresponding ACE entry in pACL.
+		/// An array of <see cref="InheritedFromInfo"/> structures. The length of this array is the
+		/// same as the number of ACEs in the ACL referenced by pACL. Each <see
+		/// cref="InheritedFromInfo"/> entry provides inheritance information for the corresponding
+		/// ACE entry in pACL.
 		/// </returns>
 		InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl);
 
-		/// <summary>
-		/// Gets inheritance information for supported object type.
-		/// </summary>
-		/// <returns>An array of <see cref="InheritTypeInfo" /> that includes one entry for each combination of inheritance flags and child object type that you support.</returns>
+		/// <summary>Gets inheritance information for supported object type.</summary>
+		/// <returns>
+		/// An array of <see cref="InheritTypeInfo"/> that includes one entry for each combination
+		/// of inheritance flags and child object type that you support.
+		/// </returns>
 		InheritTypeInfo[] GetInheritTypes();
 
-		/// <summary>
-		/// Callback method for the property pages.
-		/// </summary>
+		/// <summary>Callback method for the property pages.</summary>
 		/// <param name="hwnd">The HWND.</param>
 		/// <param name="uMsg">The message.</param>
 		/// <param name="uPage">The page type.</param>
 		void PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, SecurityPageType uPage);
 	}
 
-	/// <summary>
-	/// Base implementation of <see cref="IAccessControlEditorDialogProvider"/>.
-	/// </summary>
+	/// <summary>Base implementation of <see cref="IAccessControlEditorDialogProvider"/>.</summary>
 	public class GenericProvider : IAccessControlEditorDialogProvider
 	{
-		/// <summary>
-		/// Gets the type of the resource.
-		/// </summary>
-		/// <value>
-		/// The type of the resource.
-		/// </value>
+		/// <summary>Gets the type of the resource.</summary>
+		/// <value>The type of the resource.</value>
 		virtual public ResourceType ResourceType => ResourceType.Unknown;
 
 		/// <summary>
-		/// Gets an array of <see cref="AccessRightInfo" /> structures which define how to display differnt access rights supplied to the editor along with the index of the access right that should be applied to new ACEs.
+		/// Gets an array of <see cref="AccessRightInfo"/> structures which define how to display
+		/// different access rights supplied to the editor along with the index of the access right
+		/// that should be applied to new ACEs.
 		/// </summary>
-		/// <param name="flags">A set of bit flags that indicate the property page being initialized. This value is zero if the basic security page is being initialized.</param>
+		/// <param name="flags">
+		/// A set of bit flags that indicate the property page being initialized. This value is zero
+		/// if the basic security page is being initialized.
+		/// </param>
 		/// <param name="rights">The access right information for each right.</param>
-		/// <param name="defaultIndex">The default index in the <paramref name="rights" /> array for new ACEs.</param>
+		/// <param name="defaultIndex">
+		/// The default index in the <paramref name="rights"/> array for new ACEs.
+		/// </param>
 		virtual public void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 		{
 			rights = new AccessRightInfo[] {
@@ -117,12 +122,8 @@ namespace Community.Security.AccessControl
 			defaultIndex = 0;
 		}
 
-		/// <summary>
-		/// Gets a default Security Descriptor for resetting the security of the object.
-		/// </summary>
-		/// <returns>
-		/// Pointer to a Security Descriptor.
-		/// </returns>
+		/// <summary>Gets a default Security Descriptor for resetting the security of the object.</summary>
+		/// <returns>Pointer to a Security Descriptor.</returns>
 		virtual public IntPtr GetDefaultSecurity()
 		{
 			throw new NotImplementedException();
@@ -134,9 +135,7 @@ namespace Community.Security.AccessControl
 		/// <param name="pUserSid">A pointer to the Sid of the identity to check.</param>
 		/// <param name="serverName">Name of the server. This can be <c>null</c>.</param>
 		/// <param name="pSecurityDescriptor">A pointer to the security descriptor.</param>
-		/// <returns>
-		/// An array of access masks.
-		/// </returns>
+		/// <returns>An array of access masks.</returns>
 		virtual public uint[] GetEffectivePermission(IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor)
 		{
 			uint mask = NativeMethods.GetEffectiveRights(pUserSid, pSecurityDescriptor);
@@ -144,40 +143,42 @@ namespace Community.Security.AccessControl
 		}
 
 		/// <summary>
-		/// Gets the effective permissions for the provided Sid within the Security Descriptor. Called only when an object type identifier is specified.
+		/// Gets the effective permissions for the provided Sid within the Security Descriptor.
+		/// Called only when an object type identifier is specified.
 		/// </summary>
 		/// <param name="objTypeId">The object type identifier.</param>
 		/// <param name="pUserSid">A pointer to the Sid of the identity to check.</param>
 		/// <param name="serverName">Name of the server. This can be <c>null</c>.</param>
 		/// <param name="pSecurityDescriptor">A pointer to the security descriptor.</param>
 		/// <param name="objectTypeList">The object type list.</param>
-		/// <returns>
-		/// An array of access masks.
-		/// </returns>
+		/// <returns>An array of access masks.</returns>
 		/// <exception cref="System.NotImplementedException"></exception>
 		virtual public uint[] GetEffectivePermission(Guid objTypeId, IntPtr pUserSid, string serverName, IntPtr pSecurityDescriptor, out ObjectTypeList[] objectTypeList)
 		{
 			throw new NotImplementedException();
 		}
 
-		/// <summary>
-		/// Gets the generic mapping for standard rights.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="GenericMapping" /> structure fror this object type.
-		/// </returns>
+		/// <summary>Gets the generic mapping for standard rights.</summary>
+		/// <returns>A <see cref="GenericMapping"/> structure for this object type.</returns>
 		virtual public GenericMapping GetGenericMapping(sbyte AceFlags) => new GenericMapping(0x80000000, 0x40000000, 0x20000000, 0x10000000);
 
 		/// <summary>
-		/// Determines the source of inherited access control entries (ACEs) in discretionary access control lists (DACLs) and system access control lists (SACLs).
+		/// Determines the source of inherited access control entries (ACEs) in discretionary access
+		/// control lists (DACLs) and system access control lists (SACLs).
 		/// </summary>
 		/// <param name="objName">Name of the object.</param>
 		/// <param name="serverName">Name of the server.</param>
 		/// <param name="isContainer">If set to <c>true</c> object is a container.</param>
-		/// <param name="si">The object-related security information being queried. See SECURITY_INFORMATION type in Windows documentation.</param>
-		/// <param name="pAcl">A pointer to the Acl.</param>
+		/// <param name="si">
+		/// The object-related security information being queried. See SECURITY_INFORMATION type in
+		/// Windows documentation.
+		/// </param>
+		/// <param name="pAcl">A pointer to the ACL.</param>
 		/// <returns>
-		/// An array of <see cref="InheritedFromInfo" /> structures. The length of this array is the same as the number of ACEs in the ACL referenced by pACL. Each <see cref="InheritedFromInfo" /> entry provides inheritance information for the corresponding ACE entry in pACL.
+		/// An array of <see cref="InheritedFromInfo"/> structures. The length of this array is the
+		/// same as the number of ACEs in the ACL referenced by pACL. Each <see
+		/// cref="InheritedFromInfo"/> entry provides inheritance information for the corresponding
+		/// ACE entry in pACL.
 		/// </returns>
 		virtual public InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
@@ -185,11 +186,10 @@ namespace Community.Security.AccessControl
 			return NativeMethods.GetInheritanceSource(objName, this.ResourceType, (SecurityInfosEx)si, isContainer, pAcl, ref gMap);
 		}
 
-		/// <summary>
-		/// Gets inheritance information for supported object type.
-		/// </summary>
+		/// <summary>Gets inheritance information for supported object type.</summary>
 		/// <returns>
-		/// An array of <see cref="InheritTypeInfo" /> that includes one entry for each combination of inheritance flags and child object type that you support.
+		/// An array of <see cref="InheritTypeInfo"/> that includes one entry for each combination
+		/// of inheritance flags and child object type that you support.
 		/// </returns>
 		virtual public InheritTypeInfo[] GetInheritTypes() => new InheritTypeInfo[] {
 				new InheritTypeInfo((InheritFlags)0, ResStr("StdInheritance")),
@@ -201,9 +201,7 @@ namespace Community.Security.AccessControl
 				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Object, ResStr("StdInheritanceIOOI"))
 			};
 
-		/// <summary>
-		/// Callback method for the property pages.
-		/// </summary>
+		/// <summary>Callback method for the property pages.</summary>
 		/// <param name="hwnd">The HWND.</param>
 		/// <param name="uMsg">The message.</param>
 		/// <param name="uPage">The page type.</param>
@@ -211,9 +209,7 @@ namespace Community.Security.AccessControl
 		{
 		}
 
-		/// <summary>
-		/// Gets a resource string.
-		/// </summary>
+		/// <summary>Gets a resource string.</summary>
 		/// <param name="id">The string identifier.</param>
 		/// <returns>Localized resource string or identifier string if not found.</returns>
 		protected string ResStr(string id)
@@ -311,12 +307,6 @@ namespace Community.Security.AccessControl
 
 		public override GenericMapping GetGenericMapping(sbyte AceFlags) => new GenericMapping((uint)RegistryRights.ReadKey, (uint)RegistryRights.WriteKey, (uint)RegistryRights.ExecuteKey, (uint)RegistryRights.FullControl);
 
-		public override InheritTypeInfo[] GetInheritTypes() => new InheritTypeInfo[] {
-				new InheritTypeInfo((InheritFlags)0, ResStr("RegistryInheritance")),
-				new InheritTypeInfo(InheritFlags.Container | InheritFlags.Object, ResStr("RegistryInheritanceCI")),
-				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Container, ResStr("RegistryInheritanceIOCI")),
-			};
-
 		public override InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
 			var ret = base.GetInheritSource(objName, serverName, isContainer, si, pAcl);
@@ -332,6 +322,12 @@ namespace Community.Security.AccessControl
 			}
 			return ret;
 		}
+
+		public override InheritTypeInfo[] GetInheritTypes() => new InheritTypeInfo[] {
+				new InheritTypeInfo((InheritFlags)0, ResStr("RegistryInheritance")),
+				new InheritTypeInfo(InheritFlags.Container | InheritFlags.Object, ResStr("RegistryInheritanceCI")),
+				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Container, ResStr("RegistryInheritanceIOCI")),
+			};
 	}
 
 	internal class TaskProvider : GenericProvider

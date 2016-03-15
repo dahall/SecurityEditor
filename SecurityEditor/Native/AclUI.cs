@@ -1,19 +1,11 @@
 ﻿using Community.Security.AccessControl;
 using System;
 using System.Runtime.InteropServices;
-using System.Security.AccessControl;
 
 namespace Microsoft.Win32
 {
 	internal static partial class NativeMethods
 	{
-		[DllImport("aclui.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool EditSecurity(IntPtr hwnd, ISecurityInformation psi);
-
-		[DllImport("aclui.dll", PreserveSig = false)]
-		public static extern void EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, uint pageType);
-
 		[Flags]
 		internal enum GET_SECURITY_REQUEST_INFORMATION
 		{
@@ -21,6 +13,14 @@ namespace Microsoft.Win32
 			GROUP_SECURITY_INFORMATION = 2,
 			DACL_SECURITY_INFORMATION = 4,
 			SACL_SECURITY_INFORMATION = 8,
+		}
+
+		internal enum SecurityObjectType : uint
+		{
+			ObjectSD = 1,
+			Share = 2,
+			CentralPolicy = 3,
+			CentralAccessRule = 4
 		}
 
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("3853DC76-9F35-407c-88A1-D19344365FBC")]
@@ -57,6 +57,7 @@ namespace Microsoft.Win32
 			_In_opt_ PAUTHZ_SECURITY_ATTRIBUTE_OPERATION pAuthzDeviceClaimsOperations,
 			_Inout_updates_(dwSecurityObjectCount) PEFFPERM_RESULT_LIST pEffpermResultLists);
 			*/
+
 			void ComputeEffectivePermissionWithSecondarySecurity(
 				[In] IntPtr pSid,
 				[In, Optional] IntPtr pDeviceSid,
@@ -97,6 +98,7 @@ namespace Microsoft.Win32
 		{
 			[return: MarshalAs(UnmanagedType.Bool)]
 			bool IsDaclCanonical([In] IntPtr pDacl);
+
 			void LookupSids([In] uint cSids, [In] IntPtr rgpSids, out IntPtr ppdo);
 		}
 
@@ -104,6 +106,7 @@ namespace Microsoft.Win32
 		internal interface ISecurityInformation3
 		{
 			void GetFullResourceName(out string szResourceName);
+
 			void OpenElevatedEditor([In] IntPtr hWnd, [In] uint uPage);
 		}
 
@@ -119,22 +122,24 @@ namespace Microsoft.Win32
 			void GetInheritSource([In] int si, [In] IntPtr pACL, [MarshalAs(UnmanagedType.LPArray)] out InheritedFromInfo[] ppInheritArray);
 		}
 
-		internal enum SecurityObjectType : uint
-		{
-			ObjectSD = 1,
-			Share = 2,
-			CentralPolicy = 3,
-			CentralAccessRule = 4
-		}
+		[DllImport("aclui.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool EditSecurity(IntPtr hwnd, ISecurityInformation psi);
+
+		[DllImport("aclui.dll", PreserveSig = false)]
+		public static extern void EditSecurityAdvanced(IntPtr hwnd, ISecurityInformation psi, uint pageType);
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 		internal struct EFFPERM_RESULT_LIST
 		{
 			[MarshalAs(UnmanagedType.Bool)]
 			public bool fEvaluated;
+
 			public uint cObjectTypeListLength;
+
 			[MarshalAs(UnmanagedType.LPArray)]
 			public ObjectTypeList[] pObjectTypeList;
+
 			[MarshalAs(UnmanagedType.LPArray)]
 			public uint[] pGrantedAccessList;
 
@@ -152,11 +157,13 @@ namespace Microsoft.Win32
 		{
 			[MarshalAs(UnmanagedType.LPWStr)]
 			public string pwszName;
+
 			public IntPtr pData;
 			public uint cbData;
 			public IntPtr pData2;
 			public uint cbData2;
 			public SecurityObjectType Id;
+
 			[MarshalAs(UnmanagedType.Bool)]
 			public bool fWellKnown;
 		}
@@ -211,10 +218,13 @@ namespace Microsoft.Win32
 		internal struct SID_INFO
 		{
 			public IntPtr pSid;
+
 			[MarshalAs(UnmanagedType.LPWStr)]
 			public string pwzCommonName;
+
 			[MarshalAs(UnmanagedType.LPWStr)]
 			public string pwzClass;
+
 			[MarshalAs(UnmanagedType.LPWStr)]
 			public string pwzUPN;
 		}

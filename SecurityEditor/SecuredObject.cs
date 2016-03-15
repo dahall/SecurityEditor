@@ -4,7 +4,7 @@ using System.Security.AccessControl;
 
 namespace Community.Security.AccessControl
 {
-	/* Derivitives of NativeObjectSecurity: (default is Group|Owner|Access)
+	/* Derivatives of NativeObjectSecurity: (default is Group|Owner|Access)
 		Security												Object.GetSecurityControl()						V	Sec	Nm
 		===========												===========================						==	===	===
 		System.IO.Pipes.PipeSecurity							System.IO.Pipes.PipeStream						3.5	N
@@ -64,10 +64,12 @@ namespace Community.Security.AccessControl
 						ObjectName = knownObject.GetPropertyValue<string>("Name");
 						DisplayName = System.IO.Path.GetFileNameWithoutExtension(ObjectName);
 						break;
+
 					case "Task":
 						DisplayName = knownObject.GetPropertyValue<string>("Name");
 						ObjectName = knownObject.GetPropertyValue<string>("Path");
 						break;
+
 					default:
 						ObjectName = knownObject.GetPropertyValue<string>("FullName");
 						DisplayName = knownObject.GetPropertyValue<string>("Name");
@@ -103,12 +105,9 @@ namespace Community.Security.AccessControl
 
 		public string DisplayName { get; set; }
 
-		public string ObjectName { get; set; }
-
 		public bool IsContainer { get; set; }
-
 		public SystemMandatoryLabel MandatoryLabel { get; }
-
+		public string ObjectName { get; set; }
 		public CommonObjectSecurity ObjectSecurity { get; }
 
 		public ResourceType ResourceType => GetResourceType(ObjectSecurity);
@@ -140,12 +139,15 @@ namespace Community.Security.AccessControl
 					else if (System.IO.Directory.Exists(objName))
 						obj = new System.IO.DirectoryInfo(objName);
 					break;
+
 				case System.Security.AccessControl.ResourceType.RegistryKey:
 					obj = GetKeyFromKeyName(objName, serverName);
 					break;
+
 				case Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType:
 					obj = GetTaskObj(objName, serverName);
 					break;
+
 				default:
 					break;
 			}
@@ -154,46 +156,50 @@ namespace Community.Security.AccessControl
 			return obj;
 		}
 
-		private static object GetTaskObj(string objName, string serverName)
+		public static ResourceType GetResourceType(CommonObjectSecurity sec)
 		{
-			try
+			switch (sec.GetType().Name)
 			{
-				Type tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler.dll");
-				if (tsType == null)
-					tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler-Merged.dll");
-				if (tsType != null)
-				{
-					object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
-					if (ts != null)
-					{
-						try
-						{
-							object r = ts.InvokeMethod<object>("GetFolder", objName);
-							if (r != null)
-								return r;
-						}
-						catch { }
+				case "FileSecurity":
+				case "DirectorySecurity":
+				case "CryptoKeySecurity":
+					return ResourceType.FileObject;
 
-						try
-						{
-							object r = ts.InvokeMethod<object>("GetTask", objName);
-							if (r != null)
-								return r;
-						}
-						catch { }
+				case "PipeSecurity":
+				case "EventWaitHandleSecurity":
+				case "MutexSecurity":
+				case "MemoryMappedFileSecurity":
+				case "SemaphoreSecurity":
+					return ResourceType.KernelObject;
 
-						try
-						{
-							object r = ts.InvokeMethod<object>("FindTask", objName, true);
-							if (r != null)
-								return r;
-						}
-						catch { }
-					}
-				}
+				case "RegistrySecurity":
+					return ResourceType.RegistryKey;
+
+				case "TaskSecurity":
+					return Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType;
 			}
-			catch { }
-			return null;
+			return ResourceType.Unknown;
+		}
+
+		public static bool IsContainerObject(CommonObjectSecurity sec)
+		{
+			string secTypeName = sec.GetType().Name;
+			return !Array.Exists<string>(nonContainerTypes, delegate (string s) { return secTypeName == s; });
+		}
+
+		public object GetAccessMask(AuthorizationRule rule) => GetAccessMask(this.ObjectSecurity, rule);
+
+		public void Persist(object newBase = null)
+		{
+			object obj = (newBase != null) ? newBase : BaseObject;
+			if (obj == null)
+				throw new ArgumentNullException("Either newBase or BaseObject must not be null.");
+
+			var mi = obj.GetType().GetMethod("SetAccessControl", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null);
+			if (mi == null)
+				throw new InvalidOperationException("Either newBase or BaseObject must represent a securable object.");
+
+			mi.Invoke(obj, new object[] { this.ObjectSecurity });
 		}
 
 		private static Microsoft.Win32.RegistryKey GetKeyFromKeyName(string keyName, string serverName)
@@ -251,50 +257,46 @@ namespace Community.Security.AccessControl
 			return retVal.OpenSubKey(subKeyName);
 		}
 
-		public static ResourceType GetResourceType(CommonObjectSecurity sec)
+		private static object GetTaskObj(string objName, string serverName)
 		{
-			switch (sec.GetType().Name)
+			try
 			{
-				case "FileSecurity":
-				case "DirectorySecurity":
-				case "CryptoKeySecurity":
-					return ResourceType.FileObject;
+				Type tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler.dll");
+				if (tsType == null)
+					tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler-Merged.dll");
+				if (tsType != null)
+				{
+					object ts = Activator.CreateInstance(tsType, serverName, (string)null, (string)null, (string)null, false);
+					if (ts != null)
+					{
+						try
+						{
+							object r = ts.InvokeMethod<object>("GetFolder", objName);
+							if (r != null)
+								return r;
+						}
+						catch { }
 
-				case "PipeSecurity":
-				case "EventWaitHandleSecurity":
-				case "MutexSecurity":
-				case "MemoryMappedFileSecurity":
-				case "SemaphoreSecurity":
-					return ResourceType.KernelObject;
+						try
+						{
+							object r = ts.InvokeMethod<object>("GetTask", objName);
+							if (r != null)
+								return r;
+						}
+						catch { }
 
-				case "RegistrySecurity":
-					return ResourceType.RegistryKey;
-
-				case "TaskSecurity":
-					return Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType;
+						try
+						{
+							object r = ts.InvokeMethod<object>("FindTask", objName, true);
+							if (r != null)
+								return r;
+						}
+						catch { }
+					}
+				}
 			}
-			return ResourceType.Unknown;
-		}
-
-		public static bool IsContainerObject(CommonObjectSecurity sec)
-		{
-			string secTypeName = sec.GetType().Name;
-			return !Array.Exists<string>(nonContainerTypes, delegate(string s) { return secTypeName == s; });
-		}
-
-		public object GetAccessMask(AuthorizationRule rule) => GetAccessMask(this.ObjectSecurity, rule);
-
-		public void Persist(object newBase = null)
-		{
-			object obj = (newBase != null) ? newBase : BaseObject;
-			if (obj == null)
-				throw new ArgumentNullException("Either newBase or BaseObject must not be null.");
-
-			var mi = obj.GetType().GetMethod("SetAccessControl", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null);
-			if (mi == null)
-				throw new InvalidOperationException("Either newBase or BaseObject must represent a securable object.");
-
-			mi.Invoke(obj, new object[] { this.ObjectSecurity });
+			catch { }
+			return null;
 		}
 
 		public class SystemMandatoryLabel

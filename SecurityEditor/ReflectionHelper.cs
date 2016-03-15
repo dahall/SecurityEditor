@@ -2,24 +2,20 @@
 {
 	internal static class ReflectionHelper
 	{
-		public static Type LoadType(string typeName, string asmRef)
+		public static T GetPropertyValue<T>(this object obj, string propertyName)
 		{
-			Type ret = null;
-			if (!TryGetType(Assembly.LoadFrom(asmRef), typeName, ref ret))
-				if (!TryGetType(Assembly.GetExecutingAssembly(), typeName, ref ret))
-					if (!TryGetType(Assembly.GetCallingAssembly(), typeName, ref ret))
-						TryGetType(Assembly.GetEntryAssembly(), typeName, ref ret);
-			return ret;
+			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, typeof(T), Type.EmptyTypes, null);
+			if (prop == null)
+				throw new ArgumentException();
+			return (T)prop.GetValue(obj, null);
 		}
 
-		private static bool TryGetType(Assembly asm, string typeName, ref Type type)
+		public static object GetPropertyValue(this object obj, string propertyName)
 		{
-			if (asm != null)
-			{
-				type = asm.GetType(typeName, false, false);
-				return (type != null);
-			}
-			return false;
+			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			if (prop == null)
+				throw new ArgumentException();
+			return prop.GetValue(obj, null);
 		}
 
 		public static T InvokeMethod<T>(this Type type, string methodName, params object[] args)
@@ -36,13 +32,13 @@
 
 		public static void InvokeMethod(this object obj, string methodName, params object[] args)
 		{
-			Type[] argTypes = (args == null || args.Length == 0) ? Type.EmptyTypes : Array.ConvertAll<object, Type>(args, delegate(object o) { return o == null ? typeof(object) : o.GetType(); });
+			Type[] argTypes = (args == null || args.Length == 0) ? Type.EmptyTypes : Array.ConvertAll<object, Type>(args, delegate (object o) { return o == null ? typeof(object) : o.GetType(); });
 			InvokeMethod(obj, methodName, argTypes, args);
 		}
 
 		public static T InvokeMethod<T>(this object obj, string methodName, params object[] args)
 		{
-			Type[] argTypes = (args == null || args.Length == 0) ? Type.EmptyTypes : Array.ConvertAll<object, Type>(args, delegate(object o) { return o == null ? typeof(object) : o.GetType(); });
+			Type[] argTypes = (args == null || args.Length == 0) ? Type.EmptyTypes : Array.ConvertAll<object, Type>(args, delegate (object o) { return o == null ? typeof(object) : o.GetType(); });
 			return InvokeMethod<T>(obj, methodName, argTypes, args);
 		}
 
@@ -73,20 +69,24 @@
 			return default(T);
 		}
 
-		public static T GetPropertyValue<T>(this object obj, string propertyName)
+		public static Type LoadType(string typeName, string asmRef)
 		{
-			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, typeof(T), Type.EmptyTypes, null);
-			if (prop == null)
-				throw new ArgumentException();
-			return (T)prop.GetValue(obj, null);
+			Type ret = null;
+			if (!TryGetType(Assembly.LoadFrom(asmRef), typeName, ref ret))
+				if (!TryGetType(Assembly.GetExecutingAssembly(), typeName, ref ret))
+					if (!TryGetType(Assembly.GetCallingAssembly(), typeName, ref ret))
+						TryGetType(Assembly.GetEntryAssembly(), typeName, ref ret);
+			return ret;
 		}
 
-		public static object GetPropertyValue(this object obj, string propertyName)
+		private static bool TryGetType(Assembly asm, string typeName, ref Type type)
 		{
-			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-			if (prop == null)
-				throw new ArgumentException();
-			return prop.GetValue(obj, null);
+			if (asm != null)
+			{
+				type = asm.GetType(typeName, false, false);
+				return (type != null);
+			}
+			return false;
 		}
 	}
 }

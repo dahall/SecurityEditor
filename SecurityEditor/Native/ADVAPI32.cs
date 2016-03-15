@@ -7,7 +7,7 @@ namespace Microsoft.Win32
 {
 	internal static partial class NativeMethods
 	{
-		const string ADVAPI32 = "advapi32.dll";
+		private const string ADVAPI32 = "advapi32.dll";
 
 		[Flags]
 		public enum AccessTypes : uint
@@ -123,10 +123,6 @@ namespace Microsoft.Win32
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public extern static bool DuplicateToken(SafeTokenHandle ExistingTokenHandle, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, out SafeTokenHandle DuplicateTokenHandle);
 
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail), DllImport(ADVAPI32, CharSet = CharSet.Auto, SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		internal static extern bool DuplicateTokenEx([In] SafeTokenHandle ExistingTokenHandle, [In] AccessTypes DesiredAccess, [In] IntPtr TokenAttributes, [In] SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, [In] TokenType TokenType, [In, Out] ref SafeTokenHandle DuplicateTokenHandle);
-
 		[DllImport(ADVAPI32, CharSet = CharSet.Auto, SetLastError = true)]
 		public static extern IntPtr GetSidSubAuthority(IntPtr pSid, UInt32 nSubAuthority);
 
@@ -166,6 +162,10 @@ namespace Microsoft.Win32
 		[DllImport(ADVAPI32, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SetThreadToken(IntPtr ThreadHandle, SafeTokenHandle TokenHandle);
+
+		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail), DllImport(ADVAPI32, CharSet = CharSet.Auto, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool DuplicateTokenEx([In] SafeTokenHandle ExistingTokenHandle, [In] AccessTypes DesiredAccess, [In] IntPtr TokenAttributes, [In] SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, [In] TokenType TokenType, [In, Out] ref SafeTokenHandle DuplicateTokenHandle);
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct LUID
@@ -234,6 +234,7 @@ namespace Microsoft.Win32
 		public struct TOKEN_GROUPS
 		{
 			public uint GroupCount;
+
 			[MarshalAs(UnmanagedType.ByValArray)]
 			public SID_AND_ATTRIBUTES[] Groups;
 
@@ -268,9 +269,48 @@ namespace Microsoft.Win32
 
 		public partial class SafeTokenHandle
 		{
-			private const Int32 ERROR_NO_TOKEN = 0x000003F0;
 			private const Int32 ERROR_INSUFFICIENT_BUFFER = 122;
+			private const Int32 ERROR_NO_TOKEN = 0x000003F0;
 			private static SafeTokenHandle currentProcessToken = null;
+
+			public static SafeTokenHandle FromCurrentProcess(AccessTypes desiredAccess = AccessTypes.TokenDuplicate)
+			{
+				lock (currentProcessToken)
+				{
+					if (currentProcessToken == null)
+						currentProcessToken = FromProcess(NativeMethods.GetCurrentProcess(), desiredAccess);
+					return currentProcessToken;
+				}
+			}
+
+			public static SafeTokenHandle FromCurrentThread(AccessTypes desiredAccess = AccessTypes.TokenDuplicate, bool openAsSelf = true) => FromThread(NativeMethods.GetCurrentThread(), desiredAccess, openAsSelf);
+
+			public static SafeTokenHandle FromProcess(IntPtr hProcess, AccessTypes desiredAccess = AccessTypes.TokenDuplicate)
+			{
+				SafeTokenHandle val;
+				if (!NativeMethods.OpenProcessToken(hProcess, desiredAccess, out val))
+					throw new System.ComponentModel.Win32Exception();
+				return val;
+			}
+
+			public static SafeTokenHandle FromThread(IntPtr hThread, AccessTypes desiredAccess = AccessTypes.TokenDuplicate, bool openAsSelf = true)
+			{
+				SafeTokenHandle val;
+				if (!NativeMethods.OpenThreadToken(hThread, desiredAccess, openAsSelf, out val))
+				{
+					if (Marshal.GetLastWin32Error() == ERROR_NO_TOKEN)
+					{
+						SafeTokenHandle pval = FromCurrentProcess();
+						if (!NativeMethods.DuplicateTokenEx(pval, AccessTypes.TokenImpersonate | desiredAccess, IntPtr.Zero, SECURITY_IMPERSONATION_LEVEL.Impersonation, TokenType.TokenImpersonation, ref val))
+							throw new System.ComponentModel.Win32Exception();
+						if (!NativeMethods.SetThreadToken(IntPtr.Zero, val))
+							throw new System.ComponentModel.Win32Exception();
+					}
+					else
+						throw new System.ComponentModel.Win32Exception();
+				}
+				return val;
+			}
 
 			public T GetInfo<T>(TOKEN_INFORMATION_CLASS type)
 			{
@@ -279,7 +319,7 @@ namespace Microsoft.Win32
 
 				try
 				{
-					// Retrieve token information. 
+					// Retrieve token information.
 					if (!NativeMethods.GetTokenInformation(this, type, pType, cbSize, out cbSize))
 						throw new System.ComponentModel.Win32Exception();
 
@@ -328,45 +368,6 @@ namespace Microsoft.Win32
 				{
 					Marshal.FreeHGlobal(pType);
 				}
-			}
-
-			public static SafeTokenHandle FromCurrentProcess(AccessTypes desiredAccess = AccessTypes.TokenDuplicate)
-			{
-				lock (currentProcessToken)
-				{
-					if (currentProcessToken == null)
-						currentProcessToken = FromProcess(NativeMethods.GetCurrentProcess(), desiredAccess);
-					return currentProcessToken;
-				}
-			}
-
-			public static SafeTokenHandle FromCurrentThread(AccessTypes desiredAccess = AccessTypes.TokenDuplicate, bool openAsSelf = true) => FromThread(NativeMethods.GetCurrentThread(), desiredAccess, openAsSelf);
-
-			public static SafeTokenHandle FromProcess(IntPtr hProcess, AccessTypes desiredAccess = AccessTypes.TokenDuplicate)
-			{
-				SafeTokenHandle val;
-				if (!NativeMethods.OpenProcessToken(hProcess, desiredAccess, out val))
-					throw new System.ComponentModel.Win32Exception();
-				return val;
-			}
-
-			public static SafeTokenHandle FromThread(IntPtr hThread, AccessTypes desiredAccess = AccessTypes.TokenDuplicate, bool openAsSelf = true)
-			{
-				SafeTokenHandle val;
-				if (!NativeMethods.OpenThreadToken(hThread, desiredAccess, openAsSelf, out val))
-				{
-					if (Marshal.GetLastWin32Error() == ERROR_NO_TOKEN)
-					{
-						SafeTokenHandle pval = FromCurrentProcess();
-						if (!NativeMethods.DuplicateTokenEx(pval, AccessTypes.TokenImpersonate | desiredAccess, IntPtr.Zero, SECURITY_IMPERSONATION_LEVEL.Impersonation, TokenType.TokenImpersonation, ref val))
-							throw new System.ComponentModel.Win32Exception();
-						if (!NativeMethods.SetThreadToken(IntPtr.Zero, val))
-							throw new System.ComponentModel.Win32Exception();
-					}
-					else
-						throw new System.ComponentModel.Win32Exception();
-				}
-				return val;
 			}
 		}
 	}
