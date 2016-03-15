@@ -99,7 +99,7 @@ namespace Community.Security.AccessControl
 			NoExecuteUp = 4
 		}
 
-		public object BaseObject { get; private set; }
+		public object BaseObject { get; }
 
 		public string DisplayName { get; set; }
 
@@ -107,11 +107,11 @@ namespace Community.Security.AccessControl
 
 		public bool IsContainer { get; set; }
 
-		public SystemMandatoryLabel MandatoryLabel { get; private set; }
+		public SystemMandatoryLabel MandatoryLabel { get; }
 
-		public CommonObjectSecurity ObjectSecurity { get; private set; }
+		public CommonObjectSecurity ObjectSecurity { get; }
 
-		public ResourceType ResourceType { get { return GetResourceType(ObjectSecurity); } }
+		public ResourceType ResourceType => GetResourceType(ObjectSecurity);
 
 		public string TargetServer { get; set; }
 
@@ -282,10 +282,7 @@ namespace Community.Security.AccessControl
 			return !Array.Exists<string>(nonContainerTypes, delegate(string s) { return secTypeName == s; });
 		}
 
-		public object GetAccessMask(AuthorizationRule rule)
-		{
-			return GetAccessMask(this.ObjectSecurity, rule);
-		}
+		public object GetAccessMask(AuthorizationRule rule) => GetAccessMask(this.ObjectSecurity, rule);
 
 		public void Persist(object newBase = null)
 		{
@@ -344,11 +341,11 @@ namespace Community.Security.AccessControl
 				throw new ArgumentNullException("saclBinaryForm");*/
 			}
 
-			public bool IsSet { get { return Policy != SystemMandatoryLabelPolicy.None && Level != SystemMandatoryLabelLevel.None; } }
+			public bool IsSet => Policy != SystemMandatoryLabelPolicy.None && Level != SystemMandatoryLabelLevel.None;
 
-			public SystemMandatoryLabelLevel Level { get; private set; }
+			public SystemMandatoryLabelLevel Level { get; }
 
-			public SystemMandatoryLabelPolicy Policy { get; private set; }
+			public SystemMandatoryLabelPolicy Policy { get; }
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace Microsoft.Win32
 	internal static partial class NativeMethods
 	{
 		private static MarshaledMem EmptyGuidMem = new MarshaledMem(Guid.Empty.ToByteArray());
-		public static IntPtr EmptyGuidPtr { get { return EmptyGuidMem.Ptr; } }
+		public static IntPtr EmptyGuidPtr => EmptyGuidMem.Ptr;
 
 		public static ACCESS_ALLOWED_ACE GetAce(IntPtr pAcl, int aceIndex)
 		{
@@ -18,10 +18,7 @@ namespace Microsoft.Win32
 			throw new System.ComponentModel.Win32Exception();
 		}
 
-		public static uint GetAceCount(IntPtr pAcl)
-		{
-			return GetAclInfo(pAcl).AceCount;
-		}
+		public static uint GetAceCount(IntPtr pAcl) => GetAclInfo(pAcl).AceCount;
 
 		public static ACL_SIZE_INFORMATION GetAclInfo(IntPtr pAcl)
 		{
@@ -31,10 +28,7 @@ namespace Microsoft.Win32
 			return si;
 		}
 
-		public static uint GetAclSize(IntPtr pAcl)
-		{
-			return GetAclInfo(pAcl).AclBytesInUse;
-		}
+		public static uint GetAclSize(IntPtr pAcl) => GetAclInfo(pAcl).AclBytesInUse;
 
 		public static uint GetEffectiveRights(IntPtr pSid, IntPtr pSD)
 		{
@@ -128,9 +122,9 @@ namespace Microsoft.Win32
 				Marshal.Copy(array, 0, Ptr, array.Length);
 			}
 
-			public byte[] Array { get; private set; }
+			public byte[] Array { get; }
 
-			public IntPtr Ptr { get; private set; }
+			public IntPtr Ptr { get; }
 
 			public void Dispose()
 			{

@@ -202,12 +202,9 @@ namespace Microsoft.Win32
 					this.Flags |= ObjInfoFlags.ObjectGuid;
 			}
 
-			public bool IsContainer { get { return ((this.Flags & ObjInfoFlags.Container) == ObjInfoFlags.Container); } }
+			public bool IsContainer => ((this.Flags & ObjInfoFlags.Container) == ObjInfoFlags.Container);
 
-			public override string ToString()
-			{
-				return string.Format("{0}: {1}{2}", this.ObjectName, this.Flags, IsContainer ? " (Cont)" : "");
-			}
+			public override string ToString() => string.Format("{0}: {1}{2}", this.ObjectName, this.Flags, IsContainer ? " (Cont)" : "");
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

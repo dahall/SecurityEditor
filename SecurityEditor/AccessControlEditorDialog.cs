@@ -259,10 +259,7 @@ namespace Community.Windows.Forms
 		/// The resulting Security Descriptor in SDDL form.
 		/// </value>
 		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public string SDDL
-		{
-			get { return this.Result.GetSddlForm(System.Security.AccessControl.AccessControlSections.All); }
-		}
+		public string SDDL => this.Result.GetSddlForm(System.Security.AccessControl.AccessControlSections.All);
 
 		/// <summary>Set this flag if the computer defined by the ServerName property is known to be a domain controller. If this flag is set, the domain name is included in the scope list of the Add Users and Groups dialog box. Otherwise, the pszServerName computer is used to determine the scope list of the dialog box.</summary>
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -465,10 +462,7 @@ namespace Community.Windows.Forms
 			this.flags = defaultFlags;
 		}
 
-		internal bool ShouldSerializeFlags()
-		{
-			return (this.flags != defaultFlags);
-		}
+		internal bool ShouldSerializeFlags() => (this.flags != defaultFlags);
 
 		/// <summary>
 		/// Runs the dialog.
@@ -487,18 +481,13 @@ namespace Community.Windows.Forms
 			var ret = iSecInfo.ShowDialog(hWndOwner, this.PageType);
 			if (ret != null)
 			{
-#if DEBUG
 				MessageBox.Show(ret.GetSddlForm(System.Security.AccessControl.AccessControlSections.All));
-#endif
 				this.Result = ret;
 			}
 			return ret != null;
 		}
 
-		private bool HasFlag(ObjInfoFlags flag)
-		{
-			return ((this.Flags & flag) == flag);
-		}
+		private bool HasFlag(ObjInfoFlags flag) => ((this.Flags & flag) == flag);
 
 		private IAccessControlEditorDialogProvider ProviderFromResourceType(System.Security.AccessControl.ResourceType resType)
 		{

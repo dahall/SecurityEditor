@@ -101,10 +101,7 @@ namespace Community.Security.AccessControl
 		/// <value>
 		/// The type of the resource.
 		/// </value>
-		virtual public ResourceType ResourceType
-		{
-			get { return ResourceType.Unknown; }
-		}
+		virtual public ResourceType ResourceType => ResourceType.Unknown;
 
 		/// <summary>
 		/// Gets an array of <see cref="AccessRightInfo" /> structures which define how to display differnt access rights supplied to the editor along with the index of the access right that should be applied to new ACEs.
@@ -169,10 +166,7 @@ namespace Community.Security.AccessControl
 		/// <returns>
 		/// A <see cref="GenericMapping" /> structure fror this object type.
 		/// </returns>
-		virtual public GenericMapping GetGenericMapping(sbyte AceFlags)
-		{
-			return new GenericMapping(0x80000000, 0x40000000, 0x20000000, 0x10000000);
-		}
+		virtual public GenericMapping GetGenericMapping(sbyte AceFlags) => new GenericMapping(0x80000000, 0x40000000, 0x20000000, 0x10000000);
 
 		/// <summary>
 		/// Determines the source of inherited access control entries (ACEs) in discretionary access control lists (DACLs) and system access control lists (SACLs).
@@ -197,9 +191,7 @@ namespace Community.Security.AccessControl
 		/// <returns>
 		/// An array of <see cref="InheritTypeInfo" /> that includes one entry for each combination of inheritance flags and child object type that you support.
 		/// </returns>
-		virtual public InheritTypeInfo[] GetInheritTypes()
-		{
-			return new InheritTypeInfo[] {
+		virtual public InheritTypeInfo[] GetInheritTypes() => new InheritTypeInfo[] {
 				new InheritTypeInfo((InheritFlags)0, ResStr("StdInheritance")),
 				new InheritTypeInfo(InheritFlags.Container | InheritFlags.Object, ResStr("StdInheritanceCIOI")),
 				new InheritTypeInfo(InheritFlags.Container, ResStr("StdInheritanceCI")),
@@ -208,7 +200,6 @@ namespace Community.Security.AccessControl
 				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Container, ResStr("StdInheritanceIOCI")),
 				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Object, ResStr("StdInheritanceIOOI"))
 			};
-		}
 
 		/// <summary>
 		/// Callback method for the property pages.
@@ -236,10 +227,7 @@ namespace Community.Security.AccessControl
 
 	internal class FileProvider : GenericProvider
 	{
-		public override ResourceType ResourceType
-		{
-			get { return ResourceType.FileObject; }
-		}
+		public override ResourceType ResourceType => ResourceType.FileObject;
 
 		public override void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 		{
@@ -272,23 +260,14 @@ namespace Community.Security.AccessControl
 			defaultIndex = 3;
 		}
 
-		public override IntPtr GetDefaultSecurity()
-		{
-			return base.GetDefaultSecurity();
-			// TODO: This should return the parent's security or a default access if root.
-		}
+		public override IntPtr GetDefaultSecurity() => base.GetDefaultSecurity();
 
-		public override GenericMapping GetGenericMapping(sbyte AceFlags)
-		{
-			return new GenericMapping((uint)(FileSystemRights.Read | FileSystemRights.Synchronize),
-				(uint)(FileSystemRights.Write | FileSystemRights.Synchronize),
-				0x1200A0,
-				(uint)FileSystemRights.FullControl);
-		}
+		public override GenericMapping GetGenericMapping(sbyte AceFlags) => new GenericMapping((uint)(FileSystemRights.Read | FileSystemRights.Synchronize),
+	(uint)(FileSystemRights.Write | FileSystemRights.Synchronize),
+	0x1200A0,
+	(uint)FileSystemRights.FullControl);
 
-		public override InheritTypeInfo[] GetInheritTypes()
-		{
-			return new InheritTypeInfo[] {
+		public override InheritTypeInfo[] GetInheritTypes() => new InheritTypeInfo[] {
 				new InheritTypeInfo((InheritFlags)0, ResStr("FileInheritance")),
 				new InheritTypeInfo(InheritFlags.Container | InheritFlags.Object, ResStr("FileInheritanceCIOI")),
 				new InheritTypeInfo(InheritFlags.Container, ResStr("FileInheritanceCI")),
@@ -297,23 +276,16 @@ namespace Community.Security.AccessControl
 				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Container, ResStr("FileInheritanceIOCI")),
 				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Object, ResStr("FileInheritanceIOOI"))
 			};
-		}
 	}
 
 	internal class KernelProvider : GenericProvider
 	{
-		public override ResourceType ResourceType
-		{
-			get { return ResourceType.KernelObject; }
-		}
+		public override ResourceType ResourceType => ResourceType.KernelObject;
 	}
 
 	internal class RegistryProvider : GenericProvider
 	{
-		public override ResourceType ResourceType
-		{
-			get { return ResourceType.RegistryKey; }
-		}
+		public override ResourceType ResourceType => ResourceType.RegistryKey;
 
 		public override void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 		{
@@ -335,25 +307,15 @@ namespace Community.Security.AccessControl
 			defaultIndex = 11;
 		}
 
-		public override IntPtr GetDefaultSecurity()
-		{
-			return base.GetDefaultSecurity();
-			// TODO: This should return the parent's security or a default access if root.
-		}
+		public override IntPtr GetDefaultSecurity() => base.GetDefaultSecurity();
 
-		public override GenericMapping GetGenericMapping(sbyte AceFlags)
-		{
-			return new GenericMapping((uint)RegistryRights.ReadKey, (uint)RegistryRights.WriteKey, (uint)RegistryRights.ExecuteKey, (uint)RegistryRights.FullControl);
-		}
+		public override GenericMapping GetGenericMapping(sbyte AceFlags) => new GenericMapping((uint)RegistryRights.ReadKey, (uint)RegistryRights.WriteKey, (uint)RegistryRights.ExecuteKey, (uint)RegistryRights.FullControl);
 
-		public override InheritTypeInfo[] GetInheritTypes()
-		{
-			return new InheritTypeInfo[] {
+		public override InheritTypeInfo[] GetInheritTypes() => new InheritTypeInfo[] {
 				new InheritTypeInfo((InheritFlags)0, ResStr("RegistryInheritance")),
 				new InheritTypeInfo(InheritFlags.Container | InheritFlags.Object, ResStr("RegistryInheritanceCI")),
 				new InheritTypeInfo(InheritFlags.InheritOnly | InheritFlags.Container, ResStr("RegistryInheritanceIOCI")),
 			};
-		}
 
 		public override InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
@@ -374,10 +336,7 @@ namespace Community.Security.AccessControl
 
 	internal class TaskProvider : GenericProvider
 	{
-		public override ResourceType ResourceType
-		{
-			get { return Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType; }
-		}
+		public override ResourceType ResourceType => Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType;
 
 		public override void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 		{
@@ -409,16 +368,9 @@ namespace Community.Security.AccessControl
 			defaultIndex = 3;
 		}
 
-		public override IntPtr GetDefaultSecurity()
-		{
-			return base.GetDefaultSecurity();
-			// TODO: This should return the parent's security or a default access if root.
-		}
+		public override IntPtr GetDefaultSecurity() => base.GetDefaultSecurity();
 
-		public override GenericMapping GetGenericMapping(sbyte AceFlags)
-		{
-			return new GenericMapping(0x120089, 0x120116, 0x1200A0, 0x1F01FF);
-		}
+		public override GenericMapping GetGenericMapping(sbyte AceFlags) => new GenericMapping(0x120089, 0x120116, 0x1200A0, 0x1F01FF);
 
 		public override InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{

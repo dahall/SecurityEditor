@@ -88,10 +88,7 @@ namespace Microsoft.Win32
 				return base.Equals(obj);
 			}
 
-			public override int GetHashCode()
-			{
-				return new { A = Header.AceFlags, B = Header.AceType, C = Mask }.GetHashCode();
-			}
+			public override int GetHashCode() => new { A = Header.AceFlags, B = Header.AceType, C = Mask }.GetHashCode();
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -124,7 +121,7 @@ namespace Microsoft.Win32
 				if (ptstrName != IntPtr.Zero) Marshal.Release(ptstrName);
 			}
 
-			public string Name { get { return Marshal.PtrToStringAuto(ptstrName); } }
+			public string Name => Marshal.PtrToStringAuto(ptstrName);
 		}
 	}
 }

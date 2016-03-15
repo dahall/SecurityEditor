@@ -38,15 +38,9 @@ namespace SecurityEditorCSTester
 		{
 		}
 
-		private ObjInfoFlags GetFlags()
-		{
-			return checkBoxList.GetFlagsValue<ObjInfoFlags>(0);
-		}
+		private ObjInfoFlags GetFlags() => checkBoxList.GetFlagsValue<ObjInfoFlags>(0);
 
-		public static GroupControls.CheckBoxListItem chliConvert(KeyValuePair<string, ObjInfoFlags> kvp)
-		{
-			return new GroupControls.CheckBoxListItem() { Text = kvp.Key, Tag = kvp.Value };
-		}
+		public static GroupControls.CheckBoxListItem chliConvert(KeyValuePair<string, ObjInfoFlags> kvp) => new GroupControls.CheckBoxListItem() { Text = kvp.Key, Tag = kvp.Value };
 
 		private static object[] GetEnumObjs<T>()
 		{
