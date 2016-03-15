@@ -490,9 +490,30 @@ namespace Community.Windows.Forms
 				this.ObjectIsContainer = true;
 			this.iSecInfo = new SecurityInfoImpl(this.flags, displayName, fullObjectName, targetServer);
 			this.ResourceType = System.Security.AccessControl.ResourceType.Unknown;
-			this.Result = new System.Security.AccessControl.RawSecurityDescriptor(sd, 0);
-			this.iSecInfo.SecurityDescriptor = sd;
+			if (sd != null)
+			{
+				this.Result = new System.Security.AccessControl.RawSecurityDescriptor(sd, 0);
+				this.iSecInfo.SecurityDescriptor = sd;
+			}
+			else
+			{
+				this.Result = new System.Security.AccessControl.RawSecurityDescriptor("");
+				this.iSecInfo.SecurityDescriptor = new byte[20];
+			}
 			this.iSecInfo.SetProvider(customProvider);
+		}
+
+		/// <summary>Initializes the dialog with a known resource type.</summary>
+		/// <param name="displayName">The display name.</param>
+		/// <param name="fullName">The full name.</param>
+		/// <param name="isContainer">if set to <c>true</c> [is container].</param>
+		/// <param name="resourceType">Type of the resource.</param>
+		/// <param name="sd">The raw security descriptor.</param>
+		/// <param name="targetServer">The target server.</param>
+		public void Initialize(string displayName, string fullName, bool isContainer, System.Security.AccessControl.ResourceType resourceType, byte[] sd, string targetServer = null)
+		{
+			Initialize(displayName, fullName, isContainer, ProviderFromResourceType(resourceType), sd, targetServer);
+			this.ResourceType = resourceType;
 		}
 
 		/// <summary>
@@ -506,19 +527,6 @@ namespace Community.Windows.Forms
 		public override void Reset()
 		{
 			throw new InvalidOperationException("AccessControlEditorDialog cannot be reset. It must be instantiated with a valid securable object.");
-		}
-
-		/// <summary>Initializes the dialog with a known resource type.</summary>
-		/// <param name="displayName">The display name.</param>
-		/// <param name="fullName">The full name.</param>
-		/// <param name="isContainer">if set to <c>true</c> [is container].</param>
-		/// <param name="resourceType">Type of the resource.</param>
-		/// <param name="sd">The raw security descriptor.</param>
-		/// <param name="targetServer">The target server.</param>
-		internal void Initialize(string displayName, string fullName, bool isContainer, System.Security.AccessControl.ResourceType resourceType, byte[] sd, string targetServer = null)
-		{
-			Initialize(displayName, fullName, isContainer, ProviderFromResourceType(resourceType), sd, targetServer);
-			this.ResourceType = resourceType;
 		}
 
 		internal void ResetFlags()
@@ -545,7 +553,9 @@ namespace Community.Windows.Forms
 			var ret = iSecInfo.ShowDialog(hWndOwner, this.PageType);
 			if (ret != null)
 			{
+#if DEBUG
 				MessageBox.Show(ret.GetSddlForm(System.Security.AccessControl.AccessControlSections.All));
+#endif
 				this.Result = ret;
 			}
 			return ret != null;

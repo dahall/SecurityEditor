@@ -2,7 +2,7 @@
 <package>
   <metadata>
 	<id>SecurityEditor</id>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<title>Task Scheduler Managed Wrapper</title>
 	<authors>David Hall</authors>
 	<description>Standard Windows security editor dialog for .NET derived from CommonDialog and implementing the Windows EditSecurity API.</description>
