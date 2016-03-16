@@ -411,10 +411,10 @@ namespace Community.Security.AccessControl
 		/// <param name="flags">The access flags.</param>
 		public AccessRightInfo(uint mask, string name, AccessFlags flags)
 		{
-			this.guidObjectType = NativeMethods.EmptyGuidPtr;
-			this.Mask = mask;
-			this.Name = name;
-			this.Flags = flags;
+			guidObjectType = NativeMethods.EmptyGuidPtr;
+			Mask = mask;
+			Name = name;
+			Flags = flags;
 		}
 
 		/// <summary>Initializes a new instance of the <see cref="AccessRightInfo"/> struct.</summary>
@@ -425,7 +425,7 @@ namespace Community.Security.AccessControl
 		public AccessRightInfo(uint mask, string name, AccessFlags flags, Guid objType)
 			: this(mask, name, flags)
 		{
-			this.ObjectTypeId = objType;
+			ObjectTypeId = objType;
 		}
 
 		/// <summary>
@@ -439,9 +439,9 @@ namespace Community.Security.AccessControl
 			set
 			{
 				if (value != Guid.Empty)
-					Marshal.StructureToPtr(value, this.guidObjectType, true);
+					Marshal.StructureToPtr(value, guidObjectType, true);
 				else
-					this.guidObjectType = NativeMethods.EmptyGuidPtr;
+					guidObjectType = NativeMethods.EmptyGuidPtr;
 			}
 		}
 	}
@@ -502,8 +502,8 @@ namespace Community.Security.AccessControl
 		/// <param name="ancestorName">Name of the ancestor.</param>
 		public InheritedFromInfo(int generationGap, string ancestorName)
 		{
-			this.GenerationGap = generationGap;
-			this.AncestorName = ancestorName;
+			GenerationGap = generationGap;
+			AncestorName = ancestorName;
 		}
 
 		/// <summary>Returns a <see cref="System.String"/> that represents this instance.</summary>
@@ -554,9 +554,9 @@ namespace Community.Security.AccessControl
 		/// <param name="name">The display name.</param>
 		public InheritTypeInfo(InheritFlags flags, string name)
 		{
-			this.guidObjectType = NativeMethods.EmptyGuidPtr;
-			this.Flags = flags;
-			this.Name = name;
+			guidObjectType = NativeMethods.EmptyGuidPtr;
+			Flags = flags;
+			Name = name;
 		}
 
 		/// <summary>Initializes a new instance of the <see cref="InheritTypeInfo"/> struct.</summary>
@@ -566,7 +566,7 @@ namespace Community.Security.AccessControl
 		public InheritTypeInfo(Guid childObjectType, InheritFlags flags, string name)
 			: this(flags, name)
 		{
-			this.ChildObjectTypeId = childObjectType;
+			ChildObjectTypeId = childObjectType;
 		}
 
 		/// <summary>
@@ -580,9 +580,9 @@ namespace Community.Security.AccessControl
 			set
 			{
 				if (value != Guid.Empty)
-					Marshal.StructureToPtr(value, this.guidObjectType, true);
+					Marshal.StructureToPtr(value, guidObjectType, true);
 				else
-					this.guidObjectType = NativeMethods.EmptyGuidPtr;
+					guidObjectType = NativeMethods.EmptyGuidPtr;
 			}
 		}
 	}
@@ -606,10 +606,10 @@ namespace Community.Security.AccessControl
 		public ObjectTypeList(UInt16 level, Guid objType)
 		{
 			this.level = 0;
-			this.Sbz = 0;
-			this.guidObjectType = NativeMethods.EmptyGuidPtr;
-			this.Level = level;
-			this.ObjectId = objType;
+			Sbz = 0;
+			guidObjectType = NativeMethods.EmptyGuidPtr;
+			Level = level;
+			ObjectId = objType;
 		}
 
 		/// <summary>Represents an object that is itself.</summary>
@@ -641,9 +641,9 @@ namespace Community.Security.AccessControl
 			set
 			{
 				if (value != Guid.Empty)
-					Marshal.StructureToPtr(value, this.guidObjectType, true);
+					Marshal.StructureToPtr(value, guidObjectType, true);
 				else
-					this.guidObjectType = NativeMethods.EmptyGuidPtr;
+					guidObjectType = NativeMethods.EmptyGuidPtr;
 			}
 		}
 	}

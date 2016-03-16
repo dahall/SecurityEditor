@@ -47,14 +47,14 @@ namespace Community.Security.AccessControl
 			System.Diagnostics.Debug.WriteLine(string.Format("GetEffectivePermission: {0}, {1}", pguidObjectType, pszServerName));
 			if (pguidObjectType == Guid.Empty)
 			{
-				ppGrantedAccessList = this.prov.GetEffectivePermission(pUserSid, pszServerName, pSD);
+				ppGrantedAccessList = prov.GetEffectivePermission(pUserSid, pszServerName, pSD);
 				pcGrantedAccessListLength = (uint)ppGrantedAccessList.Length;
 				ppObjectTypeList = new ObjectTypeList[] { ObjectTypeList.Self };
 				pcObjectTypeListLength = (uint)ppObjectTypeList.Length;
 			}
 			else
 			{
-				ppGrantedAccessList = this.prov.GetEffectivePermission(pguidObjectType, pUserSid, pszServerName, pSD, out ppObjectTypeList);
+				ppGrantedAccessList = prov.GetEffectivePermission(pguidObjectType, pUserSid, pszServerName, pSD, out ppObjectTypeList);
 				pcGrantedAccessListLength = (uint)ppGrantedAccessList.Length;
 				pcObjectTypeListLength = (uint)ppObjectTypeList.Length;
 			}
@@ -65,7 +65,7 @@ namespace Community.Security.AccessControl
 			System.Diagnostics.Debug.WriteLine(string.Format("GetAccessRight: {0}, {1}", guidObject, (ObjInfoFlags)dwFlags));
 			uint defAcc;
 			AccessRightInfo[] ari;
-			this.prov.GetAccessListInfo((ObjInfoFlags)dwFlags, out ari, out defAcc);
+			prov.GetAccessListInfo((ObjInfoFlags)dwFlags, out ari, out defAcc);
 			DefaultAccess = defAcc;
 			access = ari;
 			access_count = (uint)access.Length;
@@ -74,28 +74,28 @@ namespace Community.Security.AccessControl
 		void NativeMethods.ISecurityInformation.GetInheritTypes(out InheritTypeInfo[] InheritTypes, out uint InheritTypesCount)
 		{
 			System.Diagnostics.Debug.WriteLine("GetInheritTypes");
-			InheritTypes = this.prov.GetInheritTypes();
+			InheritTypes = prov.GetInheritTypes();
 			InheritTypesCount = (uint)InheritTypes.Length;
 		}
 
 		void NativeMethods.ISecurityInformation.GetObjectInformation(ref NativeMethods.SI_OBJECT_INFO object_info)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format("GetObjectInformation: {0} {1}", this.ObjectInfo.Flags, this.currentElevation));
-			object_info = this.ObjectInfo;
-			object_info.Flags &= ~(this.currentElevation);
+			System.Diagnostics.Debug.WriteLine(string.Format("GetObjectInformation: {0} {1}", ObjectInfo.Flags, currentElevation));
+			object_info = ObjectInfo;
+			object_info.Flags &= ~(currentElevation);
 		}
 
 		void NativeMethods.ISecurityInformation.GetSecurity(int RequestInformation, out IntPtr ppSecurityDescriptor, bool fDefault)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity: {0}{1}", (SecurityInfosEx)RequestInformation, fDefault ? " (Def)" : ""));
-			ppSecurityDescriptor = NativeMethods.GetPrivateObjectSecurity(fDefault ? this.prov.GetDefaultSecurity() : pSD.Ptr, RequestInformation);
+			ppSecurityDescriptor = NativeMethods.GetPrivateObjectSecurity(fDefault ? prov.GetDefaultSecurity() : pSD.Ptr, RequestInformation);
 			System.Diagnostics.Debug.WriteLine(string.Format("GetSecurity={0}<-{1}", NativeMethods.SecurityDescriptorPtrToSDLL(ppSecurityDescriptor, RequestInformation), NativeMethods.SecurityDescriptorPtrToSDLL(pSD.Ptr, RequestInformation)));
 		}
 
 		void NativeMethods.ISecurityInformation.MapGeneric(Guid guidObjectType, ref sbyte AceFlags, ref uint Mask)
 		{
 			uint stMask = Mask;
-			GenericMapping gm = this.prov.GetGenericMapping(AceFlags);
+			GenericMapping gm = prov.GetGenericMapping(AceFlags);
 			NativeMethods.MapGenericMask(ref Mask, ref gm);
 			//if (Mask != gm.GenericAll)
 			//	Mask &= ~(uint)FileSystemRights.Synchronize;
@@ -105,18 +105,17 @@ namespace Community.Security.AccessControl
 		void NativeMethods.ISecurityInformation.PropertySheetPageCallback(IntPtr hwnd, PropertySheetCallbackMessage uMsg, SecurityPageType uPage)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("PropertySheetPageCallback: {0}, {1}, {2}", hwnd, uMsg, uPage));
-			this.prov.PropertySheetPageCallback(hwnd, uMsg, uPage);
+			prov.PropertySheetPageCallback(hwnd, uMsg, uPage);
 		}
 
 		void NativeMethods.ISecurityInformation.SetSecurity(int RequestInformation, IntPtr sd)
 		{
-			if (OnSetSecurity != null)
-				OnSetSecurity(new SecurityEventArg(sd, RequestInformation));
+			OnSetSecurity?.Invoke(new SecurityEventArg(sd, RequestInformation));
 		}
 
 		void NativeMethods.ISecurityInformation3.GetFullResourceName(out string szResourceName)
 		{
-			szResourceName = this.fullObjectName;
+			szResourceName = fullObjectName;
 		}
 
 		void NativeMethods.ISecurityInformation3.OpenElevatedEditor(IntPtr hWnd, uint uPage)
@@ -124,25 +123,25 @@ namespace Community.Security.AccessControl
 			SecurityPageType pgType = (SecurityPageType)(uPage & 0x0000FFFF);
 			SecurityPageActivation pgActv = (SecurityPageActivation)((uPage >> 16) & 0x0000FFFF);
 			System.Diagnostics.Debug.WriteLine(string.Format("OpenElevatedEditor: {0} - {1}", pgType, pgActv));
-			ObjInfoFlags lastElev = this.currentElevation;
+			ObjInfoFlags lastElev = currentElevation;
 			switch (pgActv)
 			{
 				case SecurityPageActivation.ShowDefault:
-					this.currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
+					currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
 					break;
 
 				case SecurityPageActivation.ShowPermActivated:
-					this.currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
+					currentElevation |= (ObjInfoFlags.PermsElevationRequired | ObjInfoFlags.ViewOnly);
 					pgType = SecurityPageType.AdvancedPermissions;
 					break;
 
 				case SecurityPageActivation.ShowAuditActivated:
-					this.currentElevation |= ObjInfoFlags.AuditElevationRequired;
+					currentElevation |= ObjInfoFlags.AuditElevationRequired;
 					pgType = SecurityPageType.Audit;
 					break;
 
 				case SecurityPageActivation.ShowOwnerActivated:
-					this.currentElevation |= ObjInfoFlags.OwnerElevationRequired;
+					currentElevation |= ObjInfoFlags.OwnerElevationRequired;
 					pgType = SecurityPageType.Owner;
 					break;
 
@@ -158,8 +157,8 @@ namespace Community.Security.AccessControl
 				default:
 					break;
 			}
-			this.ShowDialog(hWnd, pgType, pgActv);
-			this.currentElevation = lastElev;
+			ShowDialog(hWnd, pgType, pgActv);
+			currentElevation = lastElev;
 		}
 
 		/*void NativeMethods.ISecurityInformation4.GetSecondarySecurity(out NativeMethods.SECURITY_OBJECT[] securityObjects, out uint securityObjectCount)
@@ -172,7 +171,7 @@ namespace Community.Security.AccessControl
 		void NativeMethods.ISecurityObjectTypeInfo.GetInheritSource(int si, IntPtr pACL, out InheritedFromInfo[] ppInheritArray)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("GetInheritSource: {0}", (SecurityInfosEx)si));
-			ppInheritArray = this.prov.GetInheritSource(this.fullObjectName, this.ObjectInfo.ServerName, this.ObjectInfo.IsContainer, (uint)si, pACL);
+			ppInheritArray = prov.GetInheritSource(fullObjectName, ObjectInfo.ServerName, ObjectInfo.IsContainer, (uint)si, pACL);
 		}
 
 		public void SetProvider(IAccessControlEditorDialogProvider provider)
@@ -187,7 +186,7 @@ namespace Community.Security.AccessControl
 			SecurityEvent fn = delegate (SecurityEventArg e) { sd = e; };
 			try
 			{
-				this.OnSetSecurity += fn;
+				OnSetSecurity += fn;
 				if (System.Environment.OSVersion.Version.Major == 5 || (pageType == SecurityPageType.BasicPermissions && pageAct == SecurityPageActivation.ShowDefault))
 				{
 					if (!NativeMethods.EditSecurity(hWnd, this))
@@ -210,7 +209,7 @@ namespace Community.Security.AccessControl
 			}
 			finally
 			{
-				this.OnSetSecurity -= fn;
+				OnSetSecurity -= fn;
 			}
 			System.Diagnostics.Debug.WriteLine(string.Format("ShowDialog: Return: null"));
 			return null;

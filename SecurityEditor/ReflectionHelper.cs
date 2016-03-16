@@ -4,7 +4,7 @@
 	{
 		public static T GetPropertyValue<T>(this object obj, string propertyName)
 		{
-			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, typeof(T), Type.EmptyTypes, null);
+			var prop = obj.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance, null, typeof(T), Type.EmptyTypes, null);
 			if (prop == null)
 				throw new ArgumentException();
 			return (T)prop.GetValue(obj, null);
@@ -12,7 +12,7 @@
 
 		public static object GetPropertyValue(this object obj, string propertyName)
 		{
-			var prop = obj.GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			var prop = obj.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
 			if (prop == null)
 				throw new ArgumentException();
 			return prop.GetValue(obj, null);

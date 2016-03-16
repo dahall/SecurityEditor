@@ -46,16 +46,16 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool AllowDaclInheritanceReset
 		{
-			get { return this.HasFlag(ObjInfoFlags.ResetDaclTree); }
-			set { this.SetFlag(ObjInfoFlags.ResetDaclTree, value, true); }
+			get { return HasFlag(ObjInfoFlags.ResetDaclTree); }
+			set { SetFlag(ObjInfoFlags.ResetDaclTree, value, true); }
 		}
 
 		/// <summary>Combines the AllowEditPerms, AllowEditOwner, and AllowEditAudit properties.</summary>
 		[DefaultValue(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool AllowEditAll
 		{
-			get { return this.HasFlag(ObjInfoFlags.EditAll); }
-			set { this.SetFlag(ObjInfoFlags.EditAll, value, true); }
+			get { return HasFlag(ObjInfoFlags.EditAll); }
+			set { SetFlag(ObjInfoFlags.EditAll, value, true); }
 		}
 
 		/// <summary>
@@ -66,8 +66,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool AllowEditAudit
 		{
-			get { return this.HasFlag(ObjInfoFlags.EditAudit); }
-			set { this.SetFlag(ObjInfoFlags.EditAudit, value, true); }
+			get { return HasFlag(ObjInfoFlags.EditAudit); }
+			set { SetFlag(ObjInfoFlags.EditAudit, value, true); }
 		}
 
 		/// <summary>
@@ -78,8 +78,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool AllowEditOwner
 		{
-			get { return this.HasFlag(ObjInfoFlags.EditOwner); }
-			set { this.SetFlag(ObjInfoFlags.EditOwner, value, true); }
+			get { return HasFlag(ObjInfoFlags.EditOwner); }
+			set { SetFlag(ObjInfoFlags.EditOwner, value, true); }
 		}
 
 		/// <summary>
@@ -91,8 +91,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool AllowSaclInheritanceReset
 		{
-			get { return this.HasFlag(ObjInfoFlags.ResetSaclTree); }
-			set { this.SetFlag(ObjInfoFlags.ResetSaclTree, value, true); }
+			get { return HasFlag(ObjInfoFlags.ResetSaclTree); }
+			set { SetFlag(ObjInfoFlags.ResetSaclTree, value, true); }
 		}
 
 		/// <summary>
@@ -101,8 +101,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool AuditElevationRequired
 		{
-			get { return this.HasFlag(ObjInfoFlags.AuditElevationRequired); }
-			set { this.SetFlag(ObjInfoFlags.AuditElevationRequired, value, true); }
+			get { return HasFlag(ObjInfoFlags.AuditElevationRequired); }
+			set { SetFlag(ObjInfoFlags.AuditElevationRequired, value, true); }
 		}
 
 		/// <summary>
@@ -112,8 +112,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Browsable(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool CustomPageTitle
 		{
-			get { return this.HasFlag(ObjInfoFlags.PageTitle); }
-			private set { this.SetFlag(ObjInfoFlags.PageTitle, value); }
+			get { return HasFlag(ObjInfoFlags.PageTitle); }
+			private set { SetFlag(ObjInfoFlags.PageTitle, value); }
 		}
 
 		/// <summary>
@@ -123,8 +123,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool DisallowInheritance
 		{
-			get { return this.HasFlag(ObjInfoFlags.NoTreeApply); }
-			set { this.SetFlag(ObjInfoFlags.NoTreeApply, value, true); }
+			get { return HasFlag(ObjInfoFlags.NoTreeApply); }
+			set { SetFlag(ObjInfoFlags.NoTreeApply, value, true); }
 		}
 
 		/// <summary>
@@ -140,20 +140,20 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool DisallowProtectedAcls
 		{
-			get { return this.HasFlag(ObjInfoFlags.NoAclProtect); }
-			set { this.SetFlag(ObjInfoFlags.NoAclProtect, value); }
+			get { return HasFlag(ObjInfoFlags.NoAclProtect); }
+			set { SetFlag(ObjInfoFlags.NoAclProtect, value); }
 		}
 
 		/// <summary>Gets or sets the display name.</summary>
 		/// <value>The display name.</value>
 		public string DisplayName
 		{
-			get { return this.objectName; }
+			get { return objectName; }
 			set
 			{
-				this.objectName = value;
-				if (this.iSecInfo != null)
-					this.iSecInfo.ObjectInfo.ObjectName = value;
+				objectName = value;
+				if (iSecInfo != null)
+					iSecInfo.ObjectInfo.ObjectName = value;
 			}
 		}
 
@@ -165,8 +165,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool EditProperties
 		{
-			get { return this.HasFlag(ObjInfoFlags.EditProperties); }
-			set { this.SetFlag(ObjInfoFlags.EditProperties, value, true); }
+			get { return HasFlag(ObjInfoFlags.EditProperties); }
+			set { SetFlag(ObjInfoFlags.EditProperties, value, true); }
 		}
 
 		/// <summary>
@@ -176,8 +176,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ElevationRequired
 		{
-			get { return this.HasFlag(ObjInfoFlags.PermsElevationRequired); }
-			set { this.SetFlag(ObjInfoFlags.PermsElevationRequired, value, true); }
+			get { return HasFlag(ObjInfoFlags.PermsElevationRequired); }
+			set { SetFlag(ObjInfoFlags.PermsElevationRequired, value, true); }
 		}
 
 		/// <summary>Gets or sets the flags.</summary>
@@ -185,8 +185,8 @@ namespace Community.Windows.Forms
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public ObjInfoFlags Flags
 		{
-			get { return this.flags; }
-			set { this.flags = value; if (this.iSecInfo != null) this.iSecInfo.ObjectInfo.Flags = value; }
+			get { return flags; }
+			set { flags = value; if (iSecInfo != null) iSecInfo.ObjectInfo.Flags = value; }
 		}
 
 		/// <summary>
@@ -196,8 +196,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool HideSpecialPermissionTab
 		{
-			get { return this.HasFlag(ObjInfoFlags.NoAdditionalPermission); }
-			set { this.SetFlag(ObjInfoFlags.NoAdditionalPermission, value, true); }
+			get { return HasFlag(ObjInfoFlags.NoAdditionalPermission); }
+			set { SetFlag(ObjInfoFlags.NoAdditionalPermission, value, true); }
 		}
 
 		/// <summary>
@@ -207,8 +207,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool MayWrite
 		{
-			get { return this.HasFlag(ObjInfoFlags.MayWrite); }
-			set { this.SetFlag(ObjInfoFlags.MayWrite, value); }
+			get { return HasFlag(ObjInfoFlags.MayWrite); }
+			set { SetFlag(ObjInfoFlags.MayWrite, value); }
 		}
 
 		/// <summary>
@@ -218,8 +218,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Browsable(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ObjectGuid
 		{
-			get { return this.HasFlag(ObjInfoFlags.ObjectGuid); }
-			private set { this.SetFlag(ObjInfoFlags.ObjectGuid, value); }
+			get { return HasFlag(ObjInfoFlags.ObjectGuid); }
+			private set { SetFlag(ObjInfoFlags.ObjectGuid, value); }
 		}
 
 		/// <summary>
@@ -229,20 +229,20 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ObjectIsContainer
 		{
-			get { return this.HasFlag(ObjInfoFlags.Container); }
-			set { this.SetFlag(ObjInfoFlags.Container, value); }
+			get { return HasFlag(ObjInfoFlags.Container); }
+			set { SetFlag(ObjInfoFlags.Container, value); }
 		}
 
 		/// <summary>Gets or sets the name of the object.</summary>
 		[DefaultValue((string)null), Category("Data"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public string ObjectName
 		{
-			get { return this.objectName; }
+			get { return objectName; }
 			set
 			{
-				this.objectName = value;
-				if (this.iSecInfo != null)
-					this.iSecInfo.ObjectInfo.ObjectName = value;
+				objectName = value;
+				if (iSecInfo != null)
+					iSecInfo.ObjectInfo.ObjectName = value;
 			}
 		}
 
@@ -252,8 +252,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool OwnerElevationRequired
 		{
-			get { return this.HasFlag(ObjInfoFlags.OwnerElevationRequired); }
-			set { this.SetFlag(ObjInfoFlags.OwnerElevationRequired, value, true); }
+			get { return HasFlag(ObjInfoFlags.OwnerElevationRequired); }
+			set { SetFlag(ObjInfoFlags.OwnerElevationRequired, value, true); }
 		}
 
 		/// <summary>
@@ -263,8 +263,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool OwnerReadOnly
 		{
-			get { return this.HasFlag(ObjInfoFlags.OwnerReadOnly); }
-			set { var opt = value ? ObjInfoFlags.OwnerReadOnly | ObjInfoFlags.EditOwner : ObjInfoFlags.OwnerReadOnly; this.SetFlag(opt, value, true); }
+			get { return HasFlag(ObjInfoFlags.OwnerReadOnly); }
+			set { var opt = value ? ObjInfoFlags.OwnerReadOnly | ObjInfoFlags.EditOwner : ObjInfoFlags.OwnerReadOnly; SetFlag(opt, value, true); }
 		}
 
 		/// <summary>
@@ -275,8 +275,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool OwnerRecurse
 		{
-			get { return this.HasFlag(ObjInfoFlags.OwnerRecurse); }
-			set { this.SetFlag(ObjInfoFlags.OwnerRecurse, value, true); }
+			get { return HasFlag(ObjInfoFlags.OwnerRecurse); }
+			set { SetFlag(ObjInfoFlags.OwnerRecurse, value, true); }
 		}
 
 		/// <summary>Gets or sets the type of the page to display.</summary>
@@ -292,8 +292,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ReadOnly
 		{
-			get { return this.HasFlag(ObjInfoFlags.ReadOnly); }
-			set { if (value) this.SetFlag(ObjInfoFlags.ViewOnly, false); this.SetFlag(ObjInfoFlags.ReadOnly, value); }
+			get { return HasFlag(ObjInfoFlags.ReadOnly); }
+			set { if (value) SetFlag(ObjInfoFlags.ViewOnly, false); SetFlag(ObjInfoFlags.ReadOnly, value); }
 		}
 
 		/// <summary>Gets or sets the resource type of the object.</summary>
@@ -301,8 +301,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(System.Security.AccessControl.ResourceType.Unknown), Category("Behavior")]
 		public System.Security.AccessControl.ResourceType ResourceType
 		{
-			get { return this.resType; }
-			set { this.resType = value; }
+			get { return resType; }
+			set { resType = value; }
 		}
 
 		/// <summary>Gets the resulting Security Descriptor.</summary>
@@ -313,7 +313,7 @@ namespace Community.Windows.Forms
 		/// <summary>Gets the resulting Security Descriptor in SDDL form.</summary>
 		/// <value>The resulting Security Descriptor in SDDL form.</value>
 		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public string SDDL => this.Result.GetSddlForm(System.Security.AccessControl.AccessControlSections.All);
+		public string SDDL => Result.GetSddlForm(System.Security.AccessControl.AccessControlSections.All);
 
 		/// <summary>
 		/// Set this flag if the computer defined by the ServerName property is known to be a domain
@@ -324,8 +324,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ServerIsDC
 		{
-			get { return this.HasFlag(ObjInfoFlags.ServerIsDC); }
-			set { this.SetFlag(ObjInfoFlags.ServerIsDC, value); }
+			get { return HasFlag(ObjInfoFlags.ServerIsDC); }
+			set { SetFlag(ObjInfoFlags.ServerIsDC, value); }
 		}
 
 		/// <summary>Gets or sets the name of the server on which the object resides.</summary>
@@ -333,8 +333,8 @@ namespace Community.Windows.Forms
 		[DefaultValue((string)null), Category("Data"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public string ServerName
 		{
-			get { return this.serverName; }
-			set { this.serverName = value; if (this.iSecInfo != null) this.iSecInfo.ObjectInfo.ServerName = value; }
+			get { return serverName; }
+			set { serverName = value; if (iSecInfo != null) iSecInfo.ObjectInfo.ServerName = value; }
 		}
 
 		/// <summary>
@@ -345,8 +345,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(true), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ShowAdvancedButton
 		{
-			get { return this.HasFlag(ObjInfoFlags.Advanced); }
-			set { this.SetFlag(ObjInfoFlags.Advanced, value); if (value && this.PageType == SecurityPageType.BasicPermissions) this.SetFlag(ObjInfoFlags.ViewOnly, value); }
+			get { return HasFlag(ObjInfoFlags.Advanced); }
+			set { SetFlag(ObjInfoFlags.Advanced, value); if (value && PageType == SecurityPageType.BasicPermissions) SetFlag(ObjInfoFlags.ViewOnly, value); }
 		}
 
 		/// <summary>
@@ -355,8 +355,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ShowAuditingResetButton
 		{
-			get { return this.HasFlag(ObjInfoFlags.ResetSacl); }
-			set { this.SetFlag(ObjInfoFlags.ResetSacl, value, true); }
+			get { return HasFlag(ObjInfoFlags.ResetSacl); }
+			set { SetFlag(ObjInfoFlags.ResetSacl, value, true); }
 		}
 
 		/// <summary>
@@ -369,24 +369,24 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ShowDefaultButton
 		{
-			get { return this.HasFlag(ObjInfoFlags.Reset); }
-			set { this.SetFlag(ObjInfoFlags.Reset, value, true); }
+			get { return HasFlag(ObjInfoFlags.Reset); }
+			set { SetFlag(ObjInfoFlags.Reset, value, true); }
 		}
 
 		/// <summary>If this flag is set, the Effective Permissions page is displayed.</summary>
 		[DefaultValue(true), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ShowEffectivePermissionsPage
 		{
-			get { return this.HasFlag(ObjInfoFlags.EditEffective); }
-			set { this.SetFlag(ObjInfoFlags.EditEffective, value, true); }
+			get { return HasFlag(ObjInfoFlags.EditEffective); }
+			set { SetFlag(ObjInfoFlags.EditEffective, value, true); }
 		}
 
 		/// <summary>When set, this flag displays the Reset Defaults button on the Owner page.</summary>
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ShowOwnerResetButton
 		{
-			get { return this.HasFlag(ObjInfoFlags.ResetOwner); }
-			set { this.SetFlag(ObjInfoFlags.ResetOwner, value, true); }
+			get { return HasFlag(ObjInfoFlags.ResetOwner); }
+			set { SetFlag(ObjInfoFlags.ResetOwner, value, true); }
 		}
 
 		/// <summary>
@@ -395,8 +395,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(false), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ShowPermissionsResetButton
 		{
-			get { return this.HasFlag(ObjInfoFlags.ResetDacl); }
-			set { this.SetFlag(ObjInfoFlags.ResetDacl, value, true); }
+			get { return HasFlag(ObjInfoFlags.ResetDacl); }
+			set { SetFlag(ObjInfoFlags.ResetDacl, value, true); }
 		}
 
 		/// <summary>
@@ -407,8 +407,8 @@ namespace Community.Windows.Forms
 		[DefaultValue((string)null), Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public string TabTitle
 		{
-			get { return this.title; }
-			set { this.title = value; if (this.iSecInfo != null) this.iSecInfo.ObjectInfo.PageTitle = value; this.CustomPageTitle = !string.IsNullOrEmpty(value); }
+			get { return title; }
+			set { title = value; if (iSecInfo != null) iSecInfo.ObjectInfo.PageTitle = value; CustomPageTitle = !string.IsNullOrEmpty(value); }
 		}
 
 		/// <summary>
@@ -419,8 +419,8 @@ namespace Community.Windows.Forms
 		[DefaultValue(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ViewOnly
 		{
-			get { return this.HasFlag(ObjInfoFlags.ViewOnly); }
-			set { if (value) this.SetFlag(ObjInfoFlags.ReadOnly, false); this.SetFlag(ObjInfoFlags.ViewOnly, value); }
+			get { return HasFlag(ObjInfoFlags.ViewOnly); }
+			set { if (value) SetFlag(ObjInfoFlags.ReadOnly, false); SetFlag(ObjInfoFlags.ViewOnly, value); }
 		}
 
 		/// <summary>Initializes the dialog with the specified known object.</summary>
@@ -462,7 +462,7 @@ namespace Community.Windows.Forms
 			SecuredObject secObject = new SecuredObject(knownObject);
 			Initialize(secObject.DisplayName, secObject.ObjectName, secObject.IsContainer, ProviderFromResourceType(secObject.ResourceType),
 				secObject.ObjectSecurity.GetSecurityDescriptorBinaryForm(), secObject.TargetServer);
-			this.ResourceType = secObject.ResourceType;
+			ResourceType = secObject.ResourceType;
 		}
 
 		/// <summary>Initializes the dialog with the specified known object.</summary>
@@ -487,20 +487,20 @@ namespace Community.Windows.Forms
 		public void Initialize(string displayName, string fullObjectName, bool isContainer, IAccessControlEditorDialogProvider customProvider, byte[] sd, string targetServer = null)
 		{
 			if (isContainer)
-				this.ObjectIsContainer = true;
-			this.iSecInfo = new SecurityInfoImpl(this.flags, displayName, fullObjectName, targetServer);
-			this.ResourceType = System.Security.AccessControl.ResourceType.Unknown;
+				ObjectIsContainer = true;
+			iSecInfo = new SecurityInfoImpl(flags, displayName, fullObjectName, targetServer);
+			ResourceType = System.Security.AccessControl.ResourceType.Unknown;
 			if (sd != null)
 			{
-				this.Result = new System.Security.AccessControl.RawSecurityDescriptor(sd, 0);
-				this.iSecInfo.SecurityDescriptor = sd;
+				Result = new System.Security.AccessControl.RawSecurityDescriptor(sd, 0);
+				iSecInfo.SecurityDescriptor = sd;
 			}
 			else
 			{
-				this.Result = new System.Security.AccessControl.RawSecurityDescriptor("");
-				this.iSecInfo.SecurityDescriptor = new byte[20];
+				Result = new System.Security.AccessControl.RawSecurityDescriptor("");
+				iSecInfo.SecurityDescriptor = new byte[20];
 			}
-			this.iSecInfo.SetProvider(customProvider);
+			iSecInfo.SetProvider(customProvider);
 		}
 
 		/// <summary>Initializes the dialog with a known resource type.</summary>
@@ -513,7 +513,7 @@ namespace Community.Windows.Forms
 		public void Initialize(string displayName, string fullName, bool isContainer, System.Security.AccessControl.ResourceType resourceType, byte[] sd, string targetServer = null)
 		{
 			Initialize(displayName, fullName, isContainer, ProviderFromResourceType(resourceType), sd, targetServer);
-			this.ResourceType = resourceType;
+			ResourceType = resourceType;
 		}
 
 		/// <summary>
@@ -531,10 +531,10 @@ namespace Community.Windows.Forms
 
 		internal void ResetFlags()
 		{
-			this.flags = defaultFlags;
+			flags = defaultFlags;
 		}
 
-		internal bool ShouldSerializeFlags() => (this.flags != defaultFlags);
+		internal bool ShouldSerializeFlags() => (flags != defaultFlags);
 
 		/// <summary>Runs the dialog.</summary>
 		/// <param name="hWndOwner">The h WND owner.</param>
@@ -544,24 +544,24 @@ namespace Community.Windows.Forms
 		/// </exception>
 		protected override bool RunDialog(IntPtr hWndOwner)
 		{
-			if (iSecInfo == null && !string.IsNullOrEmpty(this.ObjectName) && this.ResourceType != System.Security.AccessControl.ResourceType.Unknown)
-				Initialize(this.ObjectName, this.ServerName, this.ResourceType);
+			if (iSecInfo == null && !string.IsNullOrEmpty(ObjectName) && ResourceType != System.Security.AccessControl.ResourceType.Unknown)
+				Initialize(ObjectName, ServerName, ResourceType);
 
 			if (iSecInfo == null)
 				throw new InvalidOperationException("The Initialize method must be called before the dialog can be shown.");
 
-			var ret = iSecInfo.ShowDialog(hWndOwner, this.PageType);
+			var ret = iSecInfo.ShowDialog(hWndOwner, PageType);
 			if (ret != null)
 			{
 #if DEBUG
 				MessageBox.Show(ret.GetSddlForm(System.Security.AccessControl.AccessControlSections.All));
 #endif
-				this.Result = ret;
+				Result = ret;
 			}
 			return ret != null;
 		}
 
-		private bool HasFlag(ObjInfoFlags flag) => ((this.Flags & flag) == flag);
+		private bool HasFlag(ObjInfoFlags flag) => ((Flags & flag) == flag);
 
 		private IAccessControlEditorDialogProvider ProviderFromResourceType(System.Security.AccessControl.ResourceType resType)
 		{
@@ -597,10 +597,10 @@ namespace Community.Windows.Forms
 			{
 				if (reqAdvanced)
 					flag |= ObjInfoFlags.Advanced;
-				this.Flags |= flag;
+				Flags |= flag;
 			}
 			else
-				this.Flags &= ~flag;
+				Flags &= ~flag;
 		}
 	}
 }

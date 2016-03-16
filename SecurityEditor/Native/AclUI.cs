@@ -197,21 +197,21 @@ namespace Microsoft.Win32
 
 			public SI_OBJECT_INFO(ObjInfoFlags flags, string objectName, string serverName, string pageTitle, Guid objectGuid)
 			{
-				this.Flags = flags;
-				this.hInstance = IntPtr.Zero;
-				this.ObjectName = objectName;
-				this.ServerName = serverName;
-				this.PageTitle = pageTitle;
-				this.ObjectTypeGuid = objectGuid;
-				if (this.PageTitle != null)
-					this.Flags |= ObjInfoFlags.PageTitle;
-				if (this.ObjectTypeGuid != Guid.Empty)
-					this.Flags |= ObjInfoFlags.ObjectGuid;
+				Flags = flags;
+				hInstance = IntPtr.Zero;
+				ObjectName = objectName;
+				ServerName = serverName;
+				PageTitle = pageTitle;
+				ObjectTypeGuid = objectGuid;
+				if (PageTitle != null)
+					Flags |= ObjInfoFlags.PageTitle;
+				if (ObjectTypeGuid != Guid.Empty)
+					Flags |= ObjInfoFlags.ObjectGuid;
 			}
 
-			public bool IsContainer => ((this.Flags & ObjInfoFlags.Container) == ObjInfoFlags.Container);
+			public bool IsContainer => ((Flags & ObjInfoFlags.Container) == ObjInfoFlags.Container);
 
-			public override string ToString() => string.Format("{0}: {1}{2}", this.ObjectName, this.Flags, IsContainer ? " (Cont)" : "");
+			public override string ToString() => string.Format("{0}: {1}{2}", ObjectName, Flags, IsContainer ? " (Cont)" : "");
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

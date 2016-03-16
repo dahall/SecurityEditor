@@ -83,7 +83,7 @@ namespace Microsoft.Win32
 				if (obj is ACCESS_ALLOWED_ACE)
 				{
 					ACCESS_ALLOWED_ACE that = (ACCESS_ALLOWED_ACE)obj;
-					return (this.Header.AceType == that.Header.AceType && this.Header.AceFlags == that.Header.AceFlags && this.Mask == that.Mask);
+					return (Header.AceType == that.Header.AceType && Header.AceFlags == that.Header.AceFlags && Mask == that.Mask);
 				}
 				return base.Equals(obj);
 			}

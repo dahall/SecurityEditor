@@ -182,8 +182,8 @@ namespace Community.Security.AccessControl
 		/// </returns>
 		virtual public InheritedFromInfo[] GetInheritSource(string objName, string serverName, bool isContainer, uint si, IntPtr pAcl)
 		{
-			GenericMapping gMap = this.GetGenericMapping(0);
-			return NativeMethods.GetInheritanceSource(objName, this.ResourceType, (SecurityInfosEx)si, isContainer, pAcl, ref gMap);
+			GenericMapping gMap = GetGenericMapping(0);
+			return NativeMethods.GetInheritanceSource(objName, ResourceType, (SecurityInfosEx)si, isContainer, pAcl, ref gMap);
 		}
 
 		/// <summary>Gets inheritance information for supported object type.</summary>

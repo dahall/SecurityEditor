@@ -60,9 +60,14 @@ namespace SecurityEditorCSTester
 
 		private void launchBtn_Click(object sender, EventArgs e)
 		{
-			accessControlEditorDialog1.Initialize(this.objNameText.Text, this.svrNameText.TextLength == 0 ? null : this.svrNameText.Text, (System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue);
-			if (this.dispNameText.TextLength > 0)
-				accessControlEditorDialog1.DisplayName = this.dispNameText.Text;
+			if (objNameText.TextLength > 0)
+			{
+				accessControlEditorDialog1.Initialize(this.objNameText.Text, this.svrNameText.TextLength == 0 ? null : this.svrNameText.Text, (System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue);
+				if (this.dispNameText.TextLength > 0)
+					accessControlEditorDialog1.DisplayName = this.dispNameText.Text;
+			}
+			else
+				accessControlEditorDialog1.Initialize(this.dispNameText.Text, this.dispNameText.Text, (GetFlags() & ObjInfoFlags.Container) != 0, (System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue, null, this.svrNameText.TextLength == 0 ? null : this.svrNameText.Text);
 			if (this.pageTypeCombo.SelectedIndex > 0)
 				accessControlEditorDialog1.PageType = (SecurityPageType)this.pageTypeCombo.SelectedValue;
 			accessControlEditorDialog1.Flags = (ObjInfoFlags)numericUpDown1.Value;

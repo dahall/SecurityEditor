@@ -2,7 +2,7 @@
 <package>
   <metadata>
 	<id>SecurityEditor</id>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<title>Task Scheduler Managed Wrapper</title>
 	<authors>David Hall</authors>
 	<description>Standard Windows security editor dialog for .NET derived from CommonDialog and implementing the Windows EditSecurity API.</description>
@@ -22,5 +22,8 @@
 	<file src="bin\Release\v4.5.2\*.dll" target="lib\45" />
 	<file src="bin\Release\v4.5.2\*.xml" target="lib\45" />
 	<file src="bin\Release\v4.5.2\**\SecurityEditor.resources.dll" target="lib\45" />
+	<file src="*.cs" target="src" />
+	<file src="Native\*.cs" target="src\Native" />
+	<file src="Properties\*.cs" target="src\Properties" />
   </files>
 </package>

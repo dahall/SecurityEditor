@@ -191,7 +191,7 @@ namespace Community.Security.AccessControl
 		[SecuritySafeCritical]
 		~PrivilegedCodeBlock()
 		{
-			this.Revert();
+			Revert();
 		}
 
 		/// <summary>Disposes of an instance of the PrivilegedCodeBlock class.</summary>
@@ -199,7 +199,7 @@ namespace Community.Security.AccessControl
 		[PermissionSetAttribute(SecurityAction.Demand, Name = "FullTrust")]
 		public void Dispose()
 		{
-			this.Revert();
+			Revert();
 			GC.SuppressFinalize(this);
 		}
 
@@ -240,7 +240,7 @@ namespace Community.Security.AccessControl
 		{
 			if (!disposed)
 			{
-				if (!this.currentThread.Equals(Thread.CurrentThread))
+				if (!currentThread.Equals(Thread.CurrentThread))
 					throw new InvalidOperationException(EnvironmentGetResourceString("InvalidOperation_MustBeSameThread"));
 
 				lock (prevPrivs)

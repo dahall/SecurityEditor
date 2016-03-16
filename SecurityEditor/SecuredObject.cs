@@ -80,8 +80,8 @@ namespace Community.Security.AccessControl
 				// Set the base object
 				BaseObject = knownObject;
 			}
-			this.IsContainer = SecuredObject.IsContainerObject(ObjectSecurity);
-			this.MandatoryLabel = new SystemMandatoryLabel(this.ObjectSecurity);
+			IsContainer = SecuredObject.IsContainerObject(ObjectSecurity);
+			MandatoryLabel = new SystemMandatoryLabel(ObjectSecurity);
 		}
 
 		public enum SystemMandatoryLabelLevel
@@ -131,7 +131,7 @@ namespace Community.Security.AccessControl
 			object obj = null;
 			switch (resType)
 			{
-				case System.Security.AccessControl.ResourceType.FileObject:
+				case ResourceType.FileObject:
 					if (!string.IsNullOrEmpty(serverName))
 						objName = System.IO.Path.Combine(serverName, objName);
 					if (System.IO.File.Exists(objName))
@@ -140,7 +140,7 @@ namespace Community.Security.AccessControl
 						obj = new System.IO.DirectoryInfo(objName);
 					break;
 
-				case System.Security.AccessControl.ResourceType.RegistryKey:
+				case ResourceType.RegistryKey:
 					obj = GetKeyFromKeyName(objName, serverName);
 					break;
 
@@ -187,7 +187,7 @@ namespace Community.Security.AccessControl
 			return !Array.Exists<string>(nonContainerTypes, delegate (string s) { return secTypeName == s; });
 		}
 
-		public object GetAccessMask(AuthorizationRule rule) => GetAccessMask(this.ObjectSecurity, rule);
+		public object GetAccessMask(AuthorizationRule rule) => GetAccessMask(ObjectSecurity, rule);
 
 		public void Persist(object newBase = null)
 		{
@@ -195,11 +195,11 @@ namespace Community.Security.AccessControl
 			if (obj == null)
 				throw new ArgumentNullException("Either newBase or BaseObject must not be null.");
 
-			var mi = obj.GetType().GetMethod("SetAccessControl", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null);
+			var mi = obj.GetType().GetMethod("SetAccessControl", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
 			if (mi == null)
 				throw new InvalidOperationException("Either newBase or BaseObject must represent a securable object.");
 
-			mi.Invoke(obj, new object[] { this.ObjectSecurity });
+			mi.Invoke(obj, new object[] { ObjectSecurity });
 		}
 
 		private static Microsoft.Win32.RegistryKey GetKeyFromKeyName(string keyName, string serverName)
