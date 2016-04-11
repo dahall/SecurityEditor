@@ -2,7 +2,7 @@
 <package>
   <metadata>
 	<id>SecurityEditor</id>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 	<title>Windows Security Editor Dialogs</title>
 	<authors>David Hall</authors>
 	<description>Standard Windows security editor dialog for .NET derived from CommonDialog and implementing the Windows EditSecurity API.</description>
@@ -22,9 +22,9 @@
 	<file src="bin\Release\v4.0\*.dll" target="lib\4" />
 	<file src="bin\Release\v4.0\*.xml" target="lib\4" />
 	<file src="bin\Release\v4.0\**\SecurityEditor.resources.dll" target="lib\4" />
-	<file src="bin\Release\v4.5.2\*.dll" target="lib\45" />
-	<file src="bin\Release\v4.5.2\*.xml" target="lib\45" />
-	<file src="bin\Release\v4.5.2\**\SecurityEditor.resources.dll" target="lib\45" />
+	<file src="bin\Release\v4.5.2\*.dll" target="lib\452" />
+	<file src="bin\Release\v4.5.2\*.xml" target="lib\452" />
+	<file src="bin\Release\v4.5.2\**\SecurityEditor.resources.dll" target="lib\452" />
 	<file src="*.cs" target="src" />
 	<file src="Native\*.cs" target="src\Native" />
 	<file src="Properties\*.cs" target="src\Properties" />
