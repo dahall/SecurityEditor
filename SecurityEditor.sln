@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecurityEditorCSTester", "SecurityEditorCSTester\SecurityEditorCSTester.csproj", "{2C3C7666-711D-48A1-92AF-C6FC1CCACDE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecurityEditorCSTester", "SecurityEditorCSTester\SecurityEditorCSTester.csproj", "{2C3C7666-711D-48A1-92AF-C6FC1CCACDE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecurityEditor", "SecurityEditor\SecurityEditor.csproj", "{21DBF69A-0D4C-44AC-8E4B-2FCB0A6E6136}"
 EndProject
