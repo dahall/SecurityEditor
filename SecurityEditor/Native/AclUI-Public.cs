@@ -544,7 +544,7 @@ public struct ObjectTypeList
 		get => level;
 		set
 		{
-			if (value < 0 || value > 4)
+			if (value is < 0 or > 4)
 				throw new ArgumentOutOfRangeException("Level", "There can be a maximum of five levels numbered zero through four.");
 			level = value;
 		}

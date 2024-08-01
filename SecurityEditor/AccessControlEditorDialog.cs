@@ -555,33 +555,14 @@ public class AccessControlEditorDialog : CommonDialog
 
 	private bool HasFlag(ObjInfoFlags flag) => (Flags & flag) == flag;
 
-	private IAccessControlEditorDialogProvider ProviderFromResourceType(System.Security.AccessControl.ResourceType resType)
+	private static GenericProvider ProviderFromResourceType(System.Security.AccessControl.ResourceType resType) => resType switch
 	{
-		IAccessControlEditorDialogProvider prov = null;
-		switch (resType)
-		{
-			case System.Security.AccessControl.ResourceType.FileObject:
-				prov = new FileProvider();
-				break;
-
-			case System.Security.AccessControl.ResourceType.KernelObject:
-				prov = new KernelProvider();
-				break;
-
-			case System.Security.AccessControl.ResourceType.RegistryKey:
-				prov = new RegistryProvider();
-				break;
-
-			case TaskResourceType:
-				prov = new TaskProvider();
-				break;
-
-			default:
-				prov = new GenericProvider();
-				break;
-		}
-		return prov;
-	}
+		System.Security.AccessControl.ResourceType.FileObject => new FileProvider(),
+		System.Security.AccessControl.ResourceType.KernelObject => new KernelProvider(),
+		System.Security.AccessControl.ResourceType.RegistryKey => new RegistryProvider(),
+		TaskResourceType => new TaskProvider(),
+		_ => new GenericProvider(),
+	};
 
 	private void SetFlag(ObjInfoFlags flag, bool set, bool reqAdvanced = false)
 	{

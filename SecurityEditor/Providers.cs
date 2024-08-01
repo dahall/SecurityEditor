@@ -100,9 +100,7 @@ public class GenericProvider : IAccessControlEditorDialogProvider
 	/// <param name="defaultIndex">The default index in the <paramref name="rights"/> array for new ACEs.</param>
 	public virtual void GetAccessListInfo(ObjInfoFlags flags, out AccessRightInfo[] rights, out uint defaultIndex)
 	{
-		rights = [
-			new(0, ResStr("Object"), 0)
-		];
+		rights = [ new(0, ResStr("Object"), 0) ];
 		defaultIndex = 0;
 	}
 
@@ -183,12 +181,7 @@ public class GenericProvider : IAccessControlEditorDialogProvider
 	/// <summary>Gets a resource string.</summary>
 	/// <param name="id">The string identifier.</param>
 	/// <returns>Localized resource string or identifier string if not found.</returns>
-	protected string ResStr(string id)
-	{
-		string ret = Properties.Resources.ResourceManager.GetString(id);
-		ret ??= id;
-		return ret;
-	}
+	protected static string ResStr(string id) => Properties.Resources.ResourceManager.GetString(id) ?? id;
 }
 
 internal class FileProvider : GenericProvider

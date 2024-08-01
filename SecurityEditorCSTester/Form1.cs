@@ -81,7 +81,7 @@ public partial class Form1 : Form
 
 	private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 	{
-		Properties.Settings.Default.resType = (int)(System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue;
+		Properties.Settings.Default.resType = (int)ResType;
 		Properties.Settings.Default.pageType = (int)(SecurityPageType)pageTypeCombo.SelectedValue;
 		Properties.Settings.Default.pageAct = (int)(SecurityPageActivation)pageActCombo.SelectedValue;
 		Properties.Settings.Default.dlgFlags = (decimal)GetFlags();
@@ -92,7 +92,7 @@ public partial class Form1 : Form
 
 	private void Form1_Load(object sender, EventArgs e)
 	{
-		resTypeCombo.SelectedValue = (System.Security.AccessControl.ResourceType)Properties.Settings.Default.resType;
+		ResType = (System.Security.AccessControl.ResourceType)Properties.Settings.Default.resType;
 		pageTypeCombo.SelectedValue = (SecurityPageType)Properties.Settings.Default.pageType;
 		pageActCombo.SelectedValue = (SecurityPageActivation)Properties.Settings.Default.pageAct;
 		objNameText.Text = Properties.Settings.Default.objName;
@@ -106,21 +106,21 @@ public partial class Form1 : Form
 	{
 		if (objNameText.TextLength > 0)
 		{
-			accessControlEditorDialog1.Initialize(objNameText.Text, svrNameText.TextLength == 0 ? null : svrNameText.Text, (System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue);
+			aceDlg.Initialize(objNameText.Text, svrNameText.TextLength == 0 ? null : svrNameText.Text, ResType);
 			if (dispNameText.TextLength > 0)
-				accessControlEditorDialog1.DisplayName = dispNameText.Text;
+				aceDlg.DisplayName = dispNameText.Text;
 		}
 		else
-			accessControlEditorDialog1.Initialize(dispNameText.Text, dispNameText.Text, (GetFlags() & ObjInfoFlags.Container) != 0, (System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue, null, svrNameText.TextLength == 0 ? null : svrNameText.Text);
+			aceDlg.Initialize(dispNameText.Text, dispNameText.Text, (GetFlags() & ObjInfoFlags.Container) != 0, ResType, null, svrNameText.TextLength == 0 ? null : svrNameText.Text);
 		if (pageTypeCombo.SelectedIndex > 0)
-			accessControlEditorDialog1.PageType = (SecurityPageType)pageTypeCombo.SelectedValue;
-		accessControlEditorDialog1.Flags = (ObjInfoFlags)numericUpDown1.Value;
-		accessControlEditorDialog1.ShowDialog(this);
+			aceDlg.PageType = (SecurityPageType)pageTypeCombo.SelectedValue;
+		aceDlg.Flags = (ObjInfoFlags)numericUpDown1.Value;
+		aceDlg.ShowDialog(this);
 	}
 
 	private void SetChecks(ObjInfoFlags flags, bool check)
 	{
-		var i = checkBoxList.Items.Find(delegate (GroupControls.CheckBoxListItem item) { return flags == (ObjInfoFlags)item.Tag; });
+		var i = checkBoxList.Items.Find(item => flags == (ObjInfoFlags)item.Tag);
 		if (i != null)
 			i.Checked = check;
 	}
@@ -129,7 +129,7 @@ public partial class Form1 : Form
 	{
 		if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
 		{
-			resTypeCombo.SelectedValue = System.Security.AccessControl.ResourceType.FileObject;
+			ResType = System.Security.AccessControl.ResourceType.FileObject;
 			objNameText.Text = folderBrowserDialog1.SelectedPath;
 			SetChecks(ObjInfoFlags.Container, true);
 		}
@@ -139,7 +139,7 @@ public partial class Form1 : Form
 	{
 		if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
 		{
-			resTypeCombo.SelectedValue = System.Security.AccessControl.ResourceType.FileObject;
+			ResType = System.Security.AccessControl.ResourceType.FileObject;
 			objNameText.Text = openFileDialog1.FileName;
 			SetChecks(ObjInfoFlags.Container, false);
 		}
@@ -150,7 +150,7 @@ public partial class Form1 : Form
 		using var dlg = new RegKeySelectionDlg();
 		if (dlg.ShowDialog(this) == DialogResult.OK)
 		{
-			resTypeCombo.SelectedValue = System.Security.AccessControl.ResourceType.RegistryKey;
+			ResType = System.Security.AccessControl.ResourceType.RegistryKey;
 			objNameText.Text = dlg.Key.Name;
 			SetChecks(ObjInfoFlags.Container, true);
 		}
@@ -161,17 +161,23 @@ public partial class Form1 : Form
 		using var dlg = new Microsoft.Win32.TaskScheduler.TaskBrowserDialog() { AllowFolderSelection = true, ShowTasks = true };
 		if (dlg.ShowDialog(this) == DialogResult.OK)
 		{
-			resTypeCombo.SelectedValue = Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType;
+			ResType = Community.Windows.Forms.AccessControlEditorDialog.TaskResourceType;
 			objNameText.Text = dlg.SelectedPath;
 			SetChecks(ObjInfoFlags.Container, dlg.SelectedPathType.Name == "TaskFolder");
 		}
+	}
+
+	private System.Security.AccessControl.ResourceType ResType
+	{
+		get => (System.Security.AccessControl.ResourceType)resTypeCombo.SelectedValue;
+		set => resTypeCombo.SelectedValue = value;
 	}
 }
 
 internal static class CBLExt
 {
 	public static T GetFlagsValue<T>(this GroupControls.CheckBoxList l, int i) where T : unmanaged, Enum =>
-		(T)Enum.ToObject(typeof(T), l.Items.Where(i => i.Checked).Sum(i => Convert.ToUInt32(i.Tag)));
+		(T)Enum.ToObject(typeof(T), l.Items.Where(i => i.Checked).Aggregate(0U, (f, i) => f | Convert.ToUInt32(i.Tag)));
 	public static void SetFlagsValue<T>(this GroupControls.CheckBoxList l, T value) where T : struct, Enum
 	{
 		for (int i = 0; i < l.Items.Count; i++)

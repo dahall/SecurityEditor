@@ -36,7 +36,7 @@ internal class SecuredObject
 		else
 		{
 			// Special handling for Tasks
-			if (knownObject.GetType().FullName == "Microsoft.Win32.TaskScheduler.Task" || knownObject.GetType().FullName == "Microsoft.Win32.TaskScheduler.TaskFolder")
+			if (knownObject.GetType().FullName is "Microsoft.Win32.TaskScheduler.Task" or "Microsoft.Win32.TaskScheduler.TaskFolder")
 			{
 				IsContainer = knownObject.GetType().Name == "TaskFolder";
 				TargetServer = knownObject.GetPropertyValue("TaskService").GetPropertyValue<string>("TargetServer");
@@ -218,7 +218,8 @@ internal class SecuredObject
 	{
 		try
 		{
-			Type tsType = System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler.dll") ?? System.Reflection.ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler-Merged.dll");
+			Type tsType = ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler.dll") ??
+				ReflectionHelper.LoadType("Microsoft.Win32.TaskScheduler.TaskService", "Microsoft.Win32.TaskScheduler-Merged.dll");
 			if (tsType != null)
 			{
 				object ts = Activator.CreateInstance(tsType, serverName, null, null, "", false);

@@ -2,12 +2,13 @@
   <PropertyGroup>
     <TargetFrameworks>net45;net48;net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <VersionPrefix>1.0.8</VersionPrefix>
+    <VersionPrefix>1.0.9</VersionPrefix>
     <RootNamespace>Community.Security.AccessControl</RootNamespace>
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Label="Package">
     <Title>Windows Security Editor Dialogs</Title>

@@ -53,7 +53,7 @@
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.pageActCombo = new System.Windows.Forms.ComboBox();
 			this.toolStripContainer2 = new System.Windows.Forms.ToolStripContainer();
-			this.accessControlEditorDialog1 = new Community.Windows.Forms.AccessControlEditorDialog();
+			this.aceDlg = new Community.Windows.Forms.AccessControlEditorDialog();
 			this.checkBoxList.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
@@ -299,10 +299,10 @@
 			this.toolStripContainer2.TabIndex = 7;
 			this.toolStripContainer2.Text = "toolStripContainer2";
 			// 
-			// accessControlEditorDialog1
+			// aceDlg
 			// 
-			this.accessControlEditorDialog1.DisplayName = null;
-			this.accessControlEditorDialog1.Flags = ((Community.Security.AccessControl.ObjInfoFlags)(((((((Community.Security.AccessControl.ObjInfoFlags.EditOwner | Community.Security.AccessControl.ObjInfoFlags.EditAudit) 
+			this.aceDlg.DisplayName = null;
+			this.aceDlg.Flags = ((Community.Security.AccessControl.ObjInfoFlags)(((((((Community.Security.AccessControl.ObjInfoFlags.EditOwner | Community.Security.AccessControl.ObjInfoFlags.EditAudit) 
             | Community.Security.AccessControl.ObjInfoFlags.Advanced) 
             | Community.Security.AccessControl.ObjInfoFlags.Reset) 
             | Community.Security.AccessControl.ObjInfoFlags.EditProperties) 
@@ -352,7 +352,7 @@
 
 		#endregion
 
-		private Community.Windows.Forms.AccessControlEditorDialog accessControlEditorDialog1;
+		private Community.Windows.Forms.AccessControlEditorDialog aceDlg;
 		private System.Windows.Forms.Button closeBtn;
 		private System.Windows.Forms.Button launchBtn;
 		private System.Windows.Forms.TextBox objNameText;

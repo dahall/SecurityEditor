@@ -58,21 +58,22 @@ internal static partial class NativeMethods
 		_Inout_updates_(dwSecurityObjectCount) PEFFPERM_RESULT_LIST pEffpermResultLists);
 		*/
 
-		void ComputeEffectivePermissionWithSecondarySecurity(
+		[PreserveSig]
+		int ComputeEffectivePermissionWithSecondarySecurity(
 			[In] IntPtr pSid,
 			[In, Optional] IntPtr pDeviceSid,
 			[In, Optional, MarshalAs(UnmanagedType.LPWStr)] string pszServerName,
-			[In, MarshalAs(UnmanagedType.LPArray)] SECURITY_OBJECT[] pSecurityObjects,
-			[In, Optional] uint dwSecurityObjectCount,
-			[In, Optional] ref TOKEN_GROUPS pUserGroups,
-			[In, Optional, MarshalAs(UnmanagedType.LPArray)] AuthzSidOperation[] pAuthzUserGroupsOperations,
-			[In, Optional] ref TOKEN_GROUPS pDeviceGroups,
-			[In, Optional, MarshalAs(UnmanagedType.LPArray)] AuthzSidOperation[] pAuthzDeviceGroupsOperations,
-			[In, Optional] ref AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzUserClaims,
-			[In, Optional] ref AuthzSecurityAttributeOperation pAuthzUserClaimsOperations,
-			[In, Optional] ref AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzDeviceClaims,
-			[In, Optional] ref AuthzSecurityAttributeOperation pAuthzDeviceClaimsOperations,
-			[In, Out, MarshalAs(UnmanagedType.LPArray)] EFFPERM_RESULT_LIST[] pEffpermResultLists);
+			[In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] SECURITY_OBJECT[] pSecurityObjects,
+			uint dwSecurityObjectCount,
+			in TOKEN_GROUPS pUserGroups,
+			[In, Optional] AuthzSidOperation[] pAuthzUserGroupsOperations,
+			in TOKEN_GROUPS pDeviceGroups,
+			[In, Optional] AuthzSidOperation[] pAuthzDeviceGroupsOperations,
+			in AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzUserClaims,
+			[In, Optional] AuthzSecurityAttributeOperation[] pAuthzUserClaimsOperations,
+			in AUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAuthzDeviceClaims,
+			[In, Optional] AuthzSecurityAttributeOperation[] pAuthzDeviceClaimsOperations,
+			[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] EFFPERM_RESULT_LIST[] pEffpermResultLists);
 	}
 
 	[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("965FC360-16FF-11d0-91CB-00AA00BBB723")]
